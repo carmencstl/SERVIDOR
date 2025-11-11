@@ -1,0 +1,28 @@
+#SERVIDOR
+
+services:
+  #
+  #
+  #SERVICIO WEB
+  web:
+    container_name: dwes-web
+    image: php:8.4-apache
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+
+      
+  #
+  #
+  #SERVICIO DE BASES DE DATOS
+  db:
+    container_name: dwes-db
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: servidorDAW
+    ports:
+      - "3306:3306"
