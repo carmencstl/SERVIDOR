@@ -6,7 +6,7 @@
 </head>
 <body>
     <h2>Formulario de Persona</h2>
-    <form action="serializa.php" method="post">
+    <form action="receptor.php" method="post">
         Nombre: <input type="text" name="nombre" required><br><br>
         Edad: <input type="number" name="edad" required><br><br>
         Email: <input type="email" name="email" required><br><br>
