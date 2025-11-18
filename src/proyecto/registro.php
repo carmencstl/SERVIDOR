@@ -3,17 +3,24 @@ require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
 session_start();
 
-     $correo = $_POST["correo"] ?? "";
-     $contrasena = $_POST["password"] ?? "";
-     $mensaje = "";
-     if(!empty($_POST)){
-         if(!autenticarUsuario($correo, $contrasena)){
-         $mensaje = "Correo o contraseña incorrectos";
-         }
-         else{
-             header("Location: dashboard.php");
-         }
-     }
+$_SESSION["usuario"] = $_SESSION["usuario"] ?? [];
+
+$mensaje = "";
+if(!empty($_POST)){
+    $correo = $_POST["correo"] ?? "";
+    $nombre = $_POST["nombre"] ?? "";
+    $password = $_POST["password"] ?? "";
+    if (verificarUsuarioExistente($_POST["correo"])){
+        $mensaje = "El usuario ya existe";
+    }
+    else{
+        $nuevoUsuario = new Usuario($nombre, $correo, $password);
+        agregarUsuario($nuevoUsuario);
+        $mensaje = "Usuario agregado";
+        header("Location: login.php");
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -33,9 +40,14 @@ session_start();
     </div>
 
     <h1>Dashboard Admin</h1>
-    <p class="subtitle">Login Gabit</p>
+    <p class="subtitle">Gestiona Gabit</p>
 
     <form method="POST">
+        <div class="mb-3">
+
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control form-control-lg" id="nombre" name="nombre" placeholder="Tu nombre">
+        </div>
         <div class="mb-3">
             <label for="correo" class="form-label">Correo electrónico</label>
             <input type="email" class="form-control form-control-lg" id="correo" name="correo"
@@ -48,13 +60,10 @@ session_start();
             <label for="password" class="form-label">Contraseña</label>
             <input type="password" class="form-control form-control-lg" id="password" name="password"
                    placeholder="Tu contraseña" required /* pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$ *\"
-                   title="Mínimo 8 caracteres: mayúscula, minúscula, número y carácter especial (@$!%*?&)">
+            title="Mínimo 8 caracteres: mayúscula, minúscula, número y carácter especial (@$!%*?&)">
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg w-100">Acceder</button>
-       <div class="mt-3 text-center">
-            <a href="registro.php">¿No tienes cuenta? Regístrate</a>
-        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100">Registrarse</button>
         <div class="mt-3 text-center text-danger">
             <?php
             if (!empty($_POST)) {
