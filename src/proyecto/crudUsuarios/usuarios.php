@@ -2,7 +2,14 @@
     require_once "../libreria/layout.php";
     require_once "../libreria/controllUsuarios.php";
     require_once "../clases/Usuario.php";
-    session_start();
+    require_once "../conexiones/bbdd.php";
+
+    $resultado = $pdo->query("SELECT * FROM Usuario ;");
+    $usuarios = $resultado->fetchAll();
+
+
+
+//    session_start();
 
     if (!empty($_POST["eliminar"])) {
         $correoEliminar = $_POST["eliminar"];
@@ -37,17 +44,22 @@
     }
 
     $terminoBusqueda = "";
-    $usuariosFiltrados = $_SESSION["usuario"] ?? [];
+//    $usuariosFiltrados = $_SESSION["usuario"] ?? [];
 
-    if(isset($_POST["buscar"]) && !empty($_POST["buscar"])){
-        $terminoBusqueda = $_POST["buscar"];
-        $usuariosFiltrados = array_filter($usuariosFiltrados, function($usuario) use ($terminoBusqueda) {
-            $nombre = strtolower($usuario->getNombre());
-            $correo = strtolower($usuario->getCorreo());
-            $termino = strtolower($terminoBusqueda);
-            return str_contains($nombre, $termino) || str_contains($correo, $termino);
-        });
-    }
+
+if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
+
+    $terminoBusqueda = trim($_POST["buscar"]);
+    $busqueda = "%{$terminoBusqueda}%";
+
+    $stmt = $pdo->prepare("SELECT * FROM Usuario WHERE Nombre LIKE :busqueda OR Email LIKE :busqueda");
+
+    $stmt->execute(["busqueda" => $busqueda]);
+    $usuariosFiltrados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} else {
+    $usuariosFiltrados = $pdo->query("SELECT * FROM Usuario")->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -66,13 +78,12 @@
         <h1>Gestión de Usuarios</h1>
         <a href="../dashboard.php" class="btn btn-outline-secondary">← Volver al Dashboard</a>
     </div>
-
     <div class="row mb-4">
         <div class="col-md-8 mx-auto">
             <form method="POST" class="card p-3 shadow-sm">
-                <h5 class="mb-3">🔍 Buscar Usuario</h5>
+                <h5 class="mb-3">Buscar Usuario</h5>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" name="buscar" value="<?= htmlspecialchars($terminoBusqueda) ?>" placeholder="Ingrese nombre o correo">
+                    <input type="text" class="form-control" name="buscar" value="<?= $terminoBusqueda ?>" placeholder="Ingrese nombre o correo">
                     <button type="submit" class="btn btn-primary">Buscar</button>
                     <?php if(!empty($terminoBusqueda)): ?>
                         <a href="usuarios.php" class="btn btn-outline-secondary">Limpiar</a>
@@ -126,7 +137,9 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th>Username</th>
                         <th>Nombre</th>
+                        <th>Apellidos</th>
                         <th>Correo Electrónico</th>
                         <th>Rol</th>
                         <th>Acciones</th>
@@ -138,24 +151,7 @@
                             echo "<tr><td colspan='4' class='text-center text-muted'>No se encontraron usuarios</td></tr>";
                         } else {
                             foreach ($usuariosFiltrados as $usuario) {
-                                echo "<tr>";
-                                echo "<td>" . htmlspecialchars($usuario->getNombre()) . "</td>";
-                                echo "<td>" . htmlspecialchars($usuario->getCorreo()) . "</td>";
-                                echo "<td>" . htmlspecialchars($usuario->getRol()) . "</td>";
-                                echo "<td>";
-
-                                echo "<form method=\"POST\" style=\"display:inline;\">";
-                                echo "<input type=\"hidden\" name=\"actualizar\" value=\"" . htmlspecialchars($usuario->getCorreo()) . "\">";
-                                echo "<button class=\"btn btn-sm btn-primary me-1\">Actualizar</button>";
-                                echo "</form>";
-
-                                echo "<form method=\"POST\" style=\"display:inline;\">";
-                                echo "<input type=\"hidden\" name=\"eliminar\" value=\"" . htmlspecialchars($usuario->getCorreo()) . "\">";
-                                echo "<button type=\"submit\" class=\"btn btn-sm btn-danger\">Eliminar</button>";
-                                echo "</form>";
-
-                                echo "</td>";
-                                echo "</tr>";
+                                mostrarDatos($usuario);
                             }
                         }
                     ?>

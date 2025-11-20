@@ -147,3 +147,29 @@ function autenticarUsuario(string $correo, string $contrasena): bool
         actualizarUsuario($correoOriginal, $nombre, $correo, $rol);
         header("Location: usuarios.php");
     }
+
+
+    /**
+     * @param $usuario
+     * @return void
+     */
+    function mostrarDatos($usuario): void
+    {
+        echo "<tr>";
+        echo "<td>" . $usuario["nombreUsuario"] . "</td>";
+        echo "<td>" . $usuario["nombre"] . "</td>";
+        echo "<td>" . $usuario["apellidos"] . "</td>";
+        echo "<td>" . $usuario["email"] . "</td>";
+        echo "<td>" . $usuario["rol"] . "</td>";
+        echo "<td>";
+        echo "<form method=\"POST\" style=\"display:inline;\">";
+        echo "<input type=\"hidden\" name=\"actualizar\" value=\"" . $usuario["email"] . "\">";
+        echo "<button class=\"btn btn-sm btn-primary me-1\">Actualizar</button>";
+        echo "</form>";
+        echo "<form method=\"POST\" style=\"display:inline;\">";
+        echo "<input type=\"hidden\" name=\"eliminar\" value=\"" . $usuario["email"] . "\">";
+        echo "<button type=\"submit\" class=\"btn btn-sm btn-danger\">Eliminar</button>";
+        echo "</form>";
+        echo "</td>";
+        echo "</tr>";
+    }
