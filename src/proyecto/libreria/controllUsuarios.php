@@ -67,5 +67,83 @@ function autenticarUsuario(string $correo, string $contrasena): bool
                     array_splice($usuarios, $index, 1);
                 }
             }
+            $_SESSION["usuario"] = $usuarios;
         }
+    }
+
+    /**
+     * @param string $correo
+     * @return Usuario|null
+     */
+    function buscarUsuarioPorCorreo(string $correo): ?Usuario
+    {
+        $usuarioEncontrado = null;
+        $usuarios = $_SESSION["usuario"] ?? [];
+        foreach ($usuarios as $usuario) {
+            if ($usuario->getCorreo() === $correo) {
+                $usuarioEncontrado = $usuario;
+            }
+        }
+        return $usuarioEncontrado;
+    }
+
+    function buscarUsuarioPorNombre(string $nombre): ?Usuario
+    {
+        $usuarioEncontrado = null;
+        $usuarios = $_SESSION["usuario"] ?? [];
+        foreach ($usuarios as $usuario) {
+            if ($usuario->getNombre() === $nombre) {
+                $usuarioEncontrado = $usuario;
+            }
+        }
+        return $usuarioEncontrado;
+    }
+
+    /**
+     * @param string $correoOriginal
+     * @param string $nuevoNombre
+     * @param string $nuevoCorreo
+     * @param string $nuevoRol
+     * @return void
+     */
+    function actualizarUsuario(string $correoOriginal,
+                               string $nuevoNombre,
+                               string $nuevoCorreo,
+                               string $nuevoRol): void
+    {
+        $usuarios = $_SESSION["usuario"] ?? [];
+        foreach ($usuarios as $usuario) {
+            if ($usuario->getCorreo() === $correoOriginal) {
+                $usuario->setNombre($nuevoNombre);
+                $usuario->setCorreo($nuevoCorreo);
+                $usuario->setRol($nuevoRol);
+            }
+        }
+        $_SESSION["usuario"] = $usuarios;
+    }
+
+    /**
+     * @param string $nombre
+     * @param string $correo
+     * @param string $password
+     * @return void
+     */
+    function crearNuevoUsuario(string $nombre, string $correo, string $password = "default123"): void
+    {
+        $nuevoUsuario = new Usuario($nombre, $correo, $password);
+        agregarUsuario($nuevoUsuario);
+        header("Location: usuarios.php");
+    }
+
+    /**
+     * @param string $correoOriginal
+     * @param string $nombre
+     * @param string $correo
+     * @param string $rol
+     * @return void
+     */
+    function actualizarUsuarioExistente(string $correoOriginal, string $nombre, string $correo, string $rol): void
+    {
+        actualizarUsuario($correoOriginal, $nombre, $correo, $rol);
+        header("Location: usuarios.php");
     }

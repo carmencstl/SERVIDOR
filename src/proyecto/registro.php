@@ -3,15 +3,20 @@ require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
 session_start();
 
+
 $_SESSION["usuario"] = $_SESSION["usuario"] ?? [];
 
 $mensaje = "";
+$usuarioExiste = false;
 if(!empty($_POST)){
+
     $correo = $_POST["correo"] ?? "";
     $nombre = $_POST["nombre"] ?? "";
     $password = $_POST["password"] ?? "";
+
     if (verificarUsuarioExistente($_POST["correo"])){
         $mensaje = "El usuario ya existe";
+        $usuarioExiste = true;
     }
     else{
         $nuevoUsuario = new Usuario($nombre, $correo, $password);
@@ -64,12 +69,11 @@ if(!empty($_POST)){
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg w-100">Registrarse</button>
-        <div class="mt-3 text-center text-danger">
-            <?php
-            if (!empty($_POST)) {
-                echo $mensaje;
-            }
-            ?>
+        <div class="mt-3 text-center">
+            <a href="login.php">Iniciar Sesión</a>
+        </div>
+        <div class="mt-3 text-center text-danger ">
+            <?php echo $mensaje; ?>
         </div>
     </form>
 </div>
