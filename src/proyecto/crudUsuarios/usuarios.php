@@ -9,39 +9,45 @@
 
 
 
-//    session_start();
+   session_start();
+//
+//    if (!empty($_POST["eliminar"])) {
+//        $correoEliminar = $_POST["eliminar"];
+//        deleteUser($correoEliminar);
+//        header("Location: usuarios.php");
+//
+//    }
 
-    if (!empty($_POST["eliminar"])) {
-        $correoEliminar = $_POST["eliminar"];
-        deleteUser($correoEliminar);
-        header("Location: usuarios.php");
-        exit();
-    }
+//    $nombreUsuarioActualizar = "";
+//    $nombreActualizar = "";
+//    $apellidoActualizar = "";
+//    $correoActualizar = "";
+//    $rolActualizar = "";
+//
+//    if (!empty($_POST["actualizar"])) {
+//
+//        $correoBuscado = $_POST["actualizar"];
+//        $usuarioEncontrado = buscarUsuarioPorCorreo($correoBuscado);
+//
+//        if ($usuarioEncontrado) {
+//            $nombreUsuarioActualizar = $usuarioEncontrado->getNombreUsuario();
+//            $nombreActualizar = $usuarioEncontrado->getNombre();
+//            $apellidoActualizar = $usuarioEncontrado->getApellido();
+//            $correoActualizar = $usuarioEncontrado->getCorreo();
+//            $rolActualizar = $usuarioEncontrado->getRol();
+//        }
+//    }
 
-    $nombreActualizar = "";
-    $correoActualizar = "";
-    $rolActualizar = "";
-
-    if (!empty($_POST["actualizar"])) {
-        $correoBuscado = $_POST["actualizar"];
-        $usuarioEncontrado = buscarUsuarioPorCorreo($correoBuscado);
-        if ($usuarioEncontrado) {
-            $nombreActualizar = $usuarioEncontrado->getNombre();
-            $correoActualizar = $usuarioEncontrado->getCorreo();
-            $rolActualizar = $usuarioEncontrado->getRol();
-        }
-    }
-
-    if (isset($_POST["guardar"])) {
-        actualizarUsuarioExistente($_POST["correoOriginal"],
-                $_POST["nombreActualizar"],
-                $_POST["correoActualizar"],
-                $_POST["rolActualizar"]);
-    }
-
-    if(isset($_POST["crear"])) {
-        crearNuevoUsuario($_POST["nombreActualizar"], $_POST["correoActualizar"]);
-    }
+//    if (isset($_POST["guardar"])) {
+//        actualizarUsuarioExistente($_POST["correoOriginal"],
+//                $_POST["nombreActualizar"],
+//                $_POST["correoActualizar"],
+//                $_POST["rolActualizar"]);
+//    }
+//
+//    if(isset($_POST["crear"])) {
+//        crearNuevoUsuario($_POST["nombreActualizar"], $_POST["correoActualizar"]);
+//    }
 
     $terminoBusqueda = "";
 //    $usuariosFiltrados = $_SESSION["usuario"] ?? [];
@@ -106,8 +112,16 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
                 <input type="hidden" name="correoOriginal" value="<?= $correoActualizar ?>">
 
                 <div class="mb-3">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $nombreUsuarioActualizar ?>" required>
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Nombre</label>
                     <input type="text" class="form-control" name="nombreActualizar" value="<?= $nombreActualizar ?>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Apellidos</label>
+                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $ApellidoActualizar ?>" required>
                 </div>
 
                 <div class="mb-3">

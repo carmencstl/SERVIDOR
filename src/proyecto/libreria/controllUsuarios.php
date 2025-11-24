@@ -7,13 +7,9 @@
  function agregarUsuario(Usuario $usuario): void
  {
 
-    if(verificarUsuarioExistente($usuario->getCorreo())) {
-        echo "El usuario ya existe";
-    }
-    else{
+    if(!verificarUsuarioExistente($usuario->getCorreo())) {
         array_push($_SESSION["usuario"], $usuario);
     }
-
 }
 
 /**
@@ -123,14 +119,16 @@ function autenticarUsuario(string $correo, string $contrasena): bool
     }
 
     /**
+     * @param string $nombreUsuario
      * @param string $nombre
+     * @param string $apellido
      * @param string $correo
      * @param string $password
      * @return void
      */
-    function crearNuevoUsuario(string $nombre, string $correo, string $password = "default123"): void
+    function crearNuevoUsuario(string $nombreUsuario, string $nombre, string $apellido, string $correo, string $password = "default123"): void
     {
-        $nuevoUsuario = new Usuario($nombre, $correo, $password);
+        $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellido, $correo, $password);
         agregarUsuario($nuevoUsuario);
         header("Location: usuarios.php");
     }
@@ -148,6 +146,20 @@ function autenticarUsuario(string $correo, string $contrasena): bool
         header("Location: usuarios.php");
     }
 
+    /**
+     * @return bool
+     */
+    function esAdmin(): bool
+    {
+        $esAdmin = false;
+        if (isset($_SESSION["usuarioActual"])) {
+            $usuarioActual = $_SESSION["usuarioActual"];
+            if ($usuarioActual->getRol() === "admin") {
+                $esAdmin = true;
+            }
+        }
+        return $esAdmin;
+    }
 
     /**
      * @param $usuario

@@ -1,4 +1,17 @@
 <?php
+require_once "libreria/layout.php";
+session_start();
+
+$esAdmin = false;
+if(empty($_SESSION["usuarioActual"])) {
+    header("Location: login.php");
+}
+else{
+    require_once "libreria/controllUsuarios.php";
+        if($_SESSION["usuarioActual"]["rol"] === "admin"){
+            $esAdmin = true;
+        }
+}
 
 ?>
 <!DOCTYPE html>
@@ -13,16 +26,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">🏔️ Gabit Dashboard</span>
-        <div class="d-flex align-items-center gap-3">
-            <span class="navbar-text">Hola, <?= "user" ?></span>
-            <a href="login.php" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
-        </div>
-    </div>
-</nav>
-
+<?php mostrarNav($_SESSION["usuarioActual"]["nombre"]); ?>
 <div class="container container-main">
     <h1 class="mb-4">Panel de Control</h1>
     <div class="row g-4 mb-5">
@@ -55,11 +59,9 @@
             </div>
         </div>
     </div>
-
-    <!-- Menú de gestión -->
     <h2 class="mb-4">Gestión</h2>
     <div class="row g-4">
-        <div class="col-md-4">
+        <div class="col-md-4" style="display: <?= $esAdmin ? 'block' : 'none' ?>;">
             <a href="crudUsuarios/usuarios.php" class="menu-card">
                 <div class="menu-icon">👥</div>
                 <h4>Usuarios</h4>
@@ -73,7 +75,7 @@
                 <p>Crear y editar paths, levels y missions</p>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="display: <?= $esAdmin ? 'block' : 'none' ?>; ">
             <a href="logros.php" class="menu-card">
                 <div class="menu-icon">🏆</div>
                 <h4>Logros</h4>

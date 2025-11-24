@@ -2,18 +2,27 @@
 
 class Usuario{
 
+    public static int $contadorUsuarios = 0;
 //    private int $id;
+    private string $nombreUsuario;
     private string $nombre;
+    private string $apellido;
     private ?string $correo;
     private string $contrasena;
     private string $rol;
 
-    public function __construct($nombre, $correo, $contrasena)
+    private bool $activo;
+
+    public function __construct($nombreUsuario, $nombre, $apellido, $correo, $contrasena)
     {
+        $this->nombreUsuario = $nombreUsuario;
         $this->nombre = $nombre;
+        $this->apellido = $apellido;
         $this->correo = $correo;
         $this->contrasena = $contrasena;
         $this->rol = "usuario";
+        $this->activo = false;
+        self::$contadorUsuarios++;
     }
 
     /**
@@ -47,6 +56,33 @@ class Usuario{
     {
         return $this->rol;
     }
+
+    /**
+     * @return string
+     */
+    public function getNombreUsuario(): string
+    {
+        return $this->nombreUsuario;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApellido(): string
+    {
+        return $this->apellido;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+
+
 
     /**
      * @param string $nombre
@@ -83,6 +119,30 @@ class Usuario{
     {
         $this->rol = $rol;
     }
+
+    /**
+     * @param string $nombreUsuario
+     * @return void
+     */
+    public function setNombreUsuario(string $nombreUsuario): void
+    {
+        $this->nombreUsuario = $nombreUsuario;
+    }
+
+    /**
+     * @return string
+     */
+    public function setApellido(string $apellido): void
+    {
+        $this->apellido = $apellido;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
+
+
 
 
 }

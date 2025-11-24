@@ -10,16 +10,19 @@ $mensaje = "";
 $usuarioExiste = false;
 if(!empty($_POST)){
 
+    $nombreUsuario = $_POST["nombreUsuario"] ?? "";
     $correo = $_POST["correo"] ?? "";
     $nombre = $_POST["nombre"] ?? "";
+    $apellido = $_POST["apellido"] ?? "";
     $password = $_POST["password"] ?? "";
+
 
     if (verificarUsuarioExistente($_POST["correo"])){
         $mensaje = "El usuario ya existe";
         $usuarioExiste = true;
     }
     else{
-        $nuevoUsuario = new Usuario($nombre, $correo, $password);
+        $nuevoUsuario = new Usuario($nombreUsuario,$nombre, $apellido, $correo, $password);
         agregarUsuario($nuevoUsuario);
         $mensaje = "Usuario agregado";
         header("Location: login.php");

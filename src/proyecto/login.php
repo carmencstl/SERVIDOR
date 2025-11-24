@@ -3,17 +3,29 @@ require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
 session_start();
 
-     $correo = $_POST["correo"] ?? "";
-     $contrasena = $_POST["password"] ?? "";
-     $mensaje = "";
-     if(!empty($_POST)){
-         if(!autenticarUsuario($correo, $contrasena)){
-         $mensaje = "Correo o contraseña incorrectos";
-         }
-         else{
-             header("Location: dashboard.php");
-         }
-     }
+$correo = $_POST["correo"] ?? "";
+$contrasena = $_POST["password"] ?? "";
+$mensaje = "";
+
+if(!empty($_POST)){
+
+
+    if(!autenticarUsuario($correo, $contrasena)){
+        $mensaje = "Correo o contraseña incorrectos";
+    }
+    else{
+        $usuario = buscarUsuarioPorCorreo($correo);
+        $usuario->setActivo(true);
+
+        $_SESSION["usuarioActual"] = [
+                "nombre" => $usuario->getNombre(),
+                "correo" => $usuario->getCorreo(),
+                "estado" => $usuario->isActivo(),
+                "rol" => $usuario->getRol()
+        ];
+        header("Location: dashboard.php");
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
