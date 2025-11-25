@@ -4,25 +4,16 @@ require_once "clases/Usuario.php";
 session_start();
 
 $correo = $_POST["correo"] ?? "";
-$contrasena = $_POST["password"] ?? "";
+$password = $_POST["password"] ?? "";
 $mensaje = "";
 
 if(!empty($_POST)){
-
-
-    if(!autenticarUsuario($correo, $contrasena)){
+    if(!autenticarUsuario($correo, $password)){
         $mensaje = "Correo o contraseña incorrectos";
     }
     else{
         $usuario = buscarUsuarioPorCorreo($correo);
-        $usuario->setActivo(true);
-
-        $_SESSION["usuarioActual"] = [
-                "nombre" => $usuario->getNombre(),
-                "correo" => $usuario->getCorreo(),
-                "estado" => $usuario->isActivo(),
-                "rol" => $usuario->getRol()
-        ];
+        $_SESSION["usuarioActual"] = $usuario;
         header("Location: dashboard.php");
     }
 }

@@ -1,31 +1,27 @@
 <?php
+require_once "conexiones/bbdd.php";
 require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
-session_start();
 
-
-$_SESSION["usuario"] = $_SESSION["usuario"] ?? [];
+$pdo = conectarBD();
 
 $mensaje = "";
-$usuarioExiste = false;
+
 if(!empty($_POST)){
 
     $nombreUsuario = $_POST["nombreUsuario"] ?? "";
-    $correo = $_POST["correo"] ?? "";
     $nombre = $_POST["nombre"] ?? "";
-    $apellido = $_POST["apellido"] ?? "";
+    $correo = $_POST["correo"] ?? "";
+    $apellidos = $_POST["apellidos"] ?? "";
     $password = $_POST["password"] ?? "";
 
-
     if (verificarUsuarioExistente($_POST["correo"])){
-        $mensaje = "El usuario ya existe";
-        $usuarioExiste = true;
+        $mensaje = "El usuario o correo ya se encuentra registrado";
     }
     else{
-        $nuevoUsuario = new Usuario($nombreUsuario,$nombre, $apellido, $correo, $password);
+        $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellidos, $correo, $password);
         agregarUsuario($nuevoUsuario);
-        $mensaje = "Usuario agregado";
-        header("Location: login.php");
+        $mensaje = "Usuario agregado correctamente";
     }
 }
 
@@ -52,9 +48,16 @@ if(!empty($_POST)){
 
     <form method="POST">
         <div class="mb-3">
-
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" class="form-control form-control-lg" id="nombre" name="nombre" placeholder="Tu nombre">
+        </div>
+        <div class="mb-3">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input type="text" class="form-control form-control-lg" id="apellidos" name="apellidos" placeholder="Apellidos">
+        </div>
+        <div class="mb-3">
+            <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control form-control-lg" id="nombreUsuario" name="nombreUsuario" placeholder="Nombre de usuario">
         </div>
         <div class="mb-3">
             <label for="correo" class="form-label">Correo electrónico</label>

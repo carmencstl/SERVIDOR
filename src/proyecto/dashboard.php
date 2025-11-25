@@ -1,5 +1,7 @@
 <?php
 require_once "libreria/layout.php";
+require_once "libreria/controllUsuarios.php";
+require_once "clases/Usuario.php";
 session_start();
 
 $esAdmin = false;
@@ -7,8 +9,8 @@ if(empty($_SESSION["usuarioActual"])) {
     header("Location: login.php");
 }
 else{
-    require_once "libreria/controllUsuarios.php";
-        if($_SESSION["usuarioActual"]["rol"] === "admin"){
+    $usuarioActual = $_SESSION["usuarioActual"];
+        if($usuarioActual->getRol() === "admin"){
             $esAdmin = true;
         }
 }
@@ -26,7 +28,7 @@ else{
 </head>
 <body>
 
-<?php mostrarNav($_SESSION["usuarioActual"]["nombre"]); ?>
+<?php mostrarNav($usuarioActual->getNombre()); ?>
 <div class="container container-main">
     <h1 class="mb-4">Panel de Control</h1>
     <div class="row g-4 mb-5">

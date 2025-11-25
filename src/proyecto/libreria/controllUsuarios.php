@@ -1,14 +1,32 @@
 <?php
 
+require_once __DIR__ . "/../clases/Usuario.php";
+require_once __DIR__ . "/../conexiones/bbdd.php";
+
+
 /**
  * @param Usuario $usuario
  * @return void
  */
- function agregarUsuario(Usuario $usuario): void
- {
+function agregarUsuario($usuario): void
+{
+    $pdo = conectarBD();
 
-    if(!verificarUsuarioExistente($usuario->getCorreo())) {
-        array_push($_SESSION["usuario"], $usuario);
+    $sql = "INSERT INTO usuario (nombreUsuario, nombre, apellidos, email, password, foto, rol, fechaRegistro) 
+            VALUES(:nombreUsuario, :nombre, :apellidos, :email, :password, :foto, :rol, :fechaRegistro)";
+
+    $resultado = $pdo->prepare($sql);
+    $resultado->bindValue(":nombreUsuario", $usuario->getNombreUsuario());
+    $resultado->bindValue(":nombre", $usuario->getNombre());
+    $resultado->bindValue(":apellidos", $usuario->getApellidos());
+    $resultado->bindValue(":email", $usuario->getEmail());
+    $resultado->bindValue(":password", $usuario->getPassword());
+    $resultado->bindValue(":foto", $usuario->getFoto());
+    $resultado->bindValue(":rol", $usuario->getRol());
+    $resultado->bindValue(":fechaRegistro", $usuario->getFechaRegistro());
+
+    if($resultado->execute()){
+        $usuario->setIdUsuario($pdo->lastInsertId());
     }
 }
 
@@ -18,70 +36,66 @@
  */
 function verificarUsuarioExistente(string $correo): bool
 {
-    $exists = false;
-    $i = 0;
-    $usuarios = $_SESSION["usuario"] ?? [];
-    while (!$exists && $i < count($usuarios)) {
-            if($usuarios[$i]->getCorreo() == $correo) {
-                $exists = true;
-            }
-        $i++;
-    }
-    return $exists;
+    $pdo = conectarBD();
+    $sql = "SELECT * FROM usuario WHERE email = :correo";
+    $resultado = $pdo->prepare($sql);
+    $resultado->bindParam(":correo", $correo);
+    $resultado->execute();
+    return $resultado->rowCount() > 0;
 }
 
 /**
  * @param string $correo
- * @param string $contrasena
+ * @param string $password
  * @return bool
  */
-function autenticarUsuario(string $correo, string $contrasena): bool
+function autenticarUsuario(string $correo, string $password): bool
 {
-    $autenticado = false;
-    $i = 0;
-    $usuarios = $_SESSION["usuario"] ?? [];
-    while (!$autenticado && $i < count($usuarios)) {
-        if($usuarios[$i]->getCorreo() == $correo && $usuarios[$i]->getContrasena() == $contrasena) {
-            $autenticado = true;
-        }
-        $i++;
-    }
-    return $autenticado;
+    $pdo = conectarBD();
+    $sql = "SELECT password FROM usuario WHERE email = :correo";
+    $resultado = $pdo->prepare($sql);
+    $resultado->bindParam(":correo", $correo);
+    $resultado->execute();
 
+    if($resultado->rowCount() > 0){
+        $usuario = $resultado->fetch(PDO::FETCH_ASSOC);
+        return $password === $usuario["password"];
+    }
+    return false;
 }
 
-    /**
-     * @param $correo
-     * @return void
-     */
-    function deleteUser($correo): void
-    {
-        if(verificarUsuarioExistente($correo)) {
-            $usuarios = $_SESSION["usuario"] ?? [];
-            foreach ($usuarios as $index => $usuario) {
-                if ($usuario->getCorreo() == $correo) {
-                    array_splice($usuarios, $index, 1);
-                }
-            }
-            $_SESSION["usuario"] = $usuarios;
-        }
-    }
-
-    /**
-     * @param string $correo
-     * @return Usuario|null
-     */
-    function buscarUsuarioPorCorreo(string $correo): ?Usuario
-    {
-        $usuarioEncontrado = null;
+/**
+ * @param $correo
+ * @return void
+ */
+function deleteUser($correo): void
+{
+    if(verificarUsuarioExistente($correo)) {
         $usuarios = $_SESSION["usuario"] ?? [];
-        foreach ($usuarios as $usuario) {
-            if ($usuario->getCorreo() === $correo) {
-                $usuarioEncontrado = $usuario;
+        foreach ($usuarios as $index => $usuario) {
+            if ($usuario->getCorreo() == $correo) {
+                array_splice($usuarios, $index, 1);
             }
         }
-        return $usuarioEncontrado;
+        $_SESSION["usuario"] = $usuarios;
     }
+}
+
+/**
+ * @param string $correo
+ * @return Usuario|null
+ */
+function buscarUsuarioPorCorreo(string $correo): ?Usuario
+{
+    $pdo = conectarBD();
+    $sql = "SELECT * FROM usuario WHERE email = :correo";
+    $resultado = $pdo->prepare($sql);
+    $resultado->bindParam(":correo", $correo);
+    $resultado->execute();
+
+    $usuario = $resultado->fetchObject(Usuario::class);
+    return $usuario ?: null;
+}
 
     function buscarUsuarioPorNombre(string $nombre): ?Usuario
     {
@@ -116,21 +130,6 @@ function autenticarUsuario(string $correo, string $contrasena): bool
             }
         }
         $_SESSION["usuario"] = $usuarios;
-    }
-
-    /**
-     * @param string $nombreUsuario
-     * @param string $nombre
-     * @param string $apellido
-     * @param string $correo
-     * @param string $password
-     * @return void
-     */
-    function crearNuevoUsuario(string $nombreUsuario, string $nombre, string $apellido, string $correo, string $password = "default123"): void
-    {
-        $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellido, $correo, $password);
-        agregarUsuario($nuevoUsuario);
-        header("Location: usuarios.php");
     }
 
     /**
