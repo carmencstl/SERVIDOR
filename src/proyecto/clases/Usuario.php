@@ -10,7 +10,7 @@ class Usuario{
     private ?string $email;
     private string $password;
     private string $rol;
-    private string $fechaRegistro;
+    private ?string $fechaRegistro;
     private ?string $foto;
     private bool $activo;
 
@@ -118,7 +118,7 @@ class Usuario{
         $this->rol = $rol;
     }
 
-    public function getFechaRegistro(): string
+    public function getFechaRegistro(): ?string
     {
         return $this->fechaRegistro;
     }

@@ -1,6 +1,7 @@
 <?php
-session_start();
-unset($_SESSION["usuarioActual"]);
-header("Location: login.php");
-exit();
+    session_start();
+    $_SESSION = [];
+    session_destroy();
+    header("Location: login.php");
+    exit();
 ?>

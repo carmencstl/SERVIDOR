@@ -2,29 +2,36 @@
 require_once "conexiones/bbdd.php";
 require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
+require_once "clases/Request.php";
 
-$pdo = conectarBD();
+session_start();
 
-$mensaje = "";
+    $pdo = conectarBD();
+    $_SESSION["usuarioActual"] = $_SESSION["usuarioActual"] ?? null;
+    $mensaje = "";
 
-if(!empty($_POST)){
+if(empty($_SESSION["usuarioActual"])){
+    if(!empty($_POST)){
 
-    $nombreUsuario = $_POST["nombreUsuario"] ?? "";
-    $nombre = $_POST["nombre"] ?? "";
-    $correo = $_POST["correo"] ?? "";
-    $apellidos = $_POST["apellidos"] ?? "";
-    $password = $_POST["password"] ?? "";
+        $nombreUsuario = $_POST["nombreUsuario"] ?? "";
+        $nombre = $_POST["nombre"] ?? "";
+        $correo = $_POST["correo"] ?? "";
+        $apellidos = $_POST["apellidos"] ?? "";
+        $password = $_POST["password"] ?? "";
 
-    if (verificarUsuarioExistente($_POST["correo"])){
-        $mensaje = "El usuario o correo ya se encuentra registrado";
-    }
-    else{
-        $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellidos, $correo, $password);
-        agregarUsuario($nuevoUsuario);
-        $mensaje = "Usuario agregado correctamente";
+        if (verificarUsuarioExistente($_POST["correo"])){
+            $mensaje = "El usuario o correo ya se encuentra registrado";
+        }
+        else{
+            $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellidos, $correo, $password);
+            agregarUsuario($nuevoUsuario);
+            $mensaje = "Usuario agregado correctamente";
+        }
     }
 }
-
+else{
+        Request::redirect("dashboard.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

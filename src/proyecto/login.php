@@ -3,20 +3,28 @@ require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
 session_start();
 
-$correo = $_POST["correo"] ?? "";
-$password = $_POST["password"] ?? "";
-$mensaje = "";
+    $correo = $_POST["correo"] ?? "";
+    $password = $_POST["password"] ?? "";
+    $mensaje = "";
+    $_SESSION["usuarioActual"] = $_SESSION["usuarioActual"] ?? null;
 
-if(!empty($_POST)){
-    if(!autenticarUsuario($correo, $password)){
-        $mensaje = "Correo o contraseña incorrectos";
+    if(empty($_SESSION["usuarioActual"])) {
+        if (!empty($_POST)) {
+            if (!autenticarUsuario($correo, $password)) {
+                $mensaje = "Correo o contraseña incorrectos";
+            } else {
+                $usuario = buscarUsuarioPorCorreo($correo);
+                $_SESSION["usuarioActual"] = $usuario;
+                header("Location: dashboard.php");
+                exit();
+            }
+        }
     }
     else{
-        $usuario = buscarUsuarioPorCorreo($correo);
-        $_SESSION["usuarioActual"] = $usuario;
         header("Location: dashboard.php");
+        exit();
     }
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
