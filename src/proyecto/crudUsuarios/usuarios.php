@@ -3,8 +3,13 @@
     require_once "../libreria/controllUsuarios.php";
     require_once "../clases/Usuario.php";
     require_once "../conexiones/bbdd.php";
-    session_start();
+
     $pdo = conectarBD();
+    $usuarios = $pdo->query("SELECT * FROM usuario");
+
+   session_start();
+
+   $usuarioActual = $_SESSION["usuarioActual"];
 //
 //    if (!empty($_POST["eliminar"])) {
 //        $correoEliminar = $_POST["eliminar"];
@@ -13,11 +18,12 @@
 //
 //    }
 
-//    $nombreUsuarioActualizar = "";
-//    $nombreActualizar = "";
-//    $apellidoActualizar = "";
-//    $correoActualizar = "";
-//    $rolActualizar = "";
+    $nombreUsuarioActualizar = "";
+    $nombreActualizar = "";
+    $apellidoUsuarioActualizar = "";
+    $apellidoActualizar = "";
+    $correoActualizar = "";
+    $rolActualizar = "";
 //
 //    if (!empty($_POST["actualizar"])) {
 //
@@ -44,23 +50,21 @@
 //        crearNuevoUsuario($_POST["nombreActualizar"], $_POST["correoActualizar"]);
 //    }
 
+    #BUSCAR
     $terminoBusqueda = "";
-//    $usuariosFiltrados = $_SESSION["usuario"] ?? [];
+    if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
 
+        $terminoBusqueda = trim($_POST["buscar"]);
+        $busqueda = "%{$terminoBusqueda}%";
 
-if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
+        $sql = $pdo->prepare("SELECT * FROM usuario WHERE Nombre LIKE :busqueda OR Email LIKE :busqueda");
 
-    $terminoBusqueda = trim($_POST["buscar"]);
-    $busqueda = "%{$terminoBusqueda}%";
-    $sql = "SELECT * FROM usuario WHERE nombre LIKE :busqueda OR email LIKE :busqueda";
-    $pdop = $pdo->prepare($sql);
-    $pdop->bindParam(":busqueda", $busqueda);
-    $pdop->bindParam(":busqueda", $busqueda);
-    $pdop->execute();
+        $sql->execute(["busqueda" => $busqueda]);
+        $usuariosFiltrados = $sql->fetchAll(PDO::FETCH_ASSOC);
 
-} else {
-    $usuariosFiltrados = $pdo->query("SELECT * FROM usuario")->fetchAll(PDO::FETCH_ASSOC);
-}
+    } else {
+        $usuariosFiltrados = $pdo->query("SELECT * FROM usuario")->fetchAll(PDO::FETCH_ASSOC);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -73,7 +77,7 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<?= mostrarNav("user") ?>
+<?= mostrarNav($usuarioActual->getNombre()) ?>
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Gestión de Usuarios</h1>
@@ -92,7 +96,7 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
                 </div>
                 <?php if(!empty($terminoBusqueda)): ?>
                     <small class="text-muted mt-2">
-                        Mostrando <?= count($usuariosFiltrados) ?> resultado(s) para "<?= htmlspecialchars($terminoBusqueda) ?>"
+                        Mostrando <?= count($usuariosFiltrados) ?> resultado(s) para "<?= $terminoBusqueda ?>"
                     </small>
                 <?php endif; ?>
             </form>
@@ -116,7 +120,7 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $ApellidoActualizar ?>" required>
+                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $apellidoActualizar ?>" required>
                 </div>
 
                 <div class="mb-3">
@@ -157,7 +161,7 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
                     <tbody>
                     <?php
                         if(empty($usuariosFiltrados)) {
-                            echo "<tr><td colspan='4' class='text-center text-muted'>No se encontraron usuarios</td></tr>";
+                            echo "<tr><td colspan='6' class='text-center text-muted'>No se encontraron usuarios</td></tr>";
                         } else {
                             foreach ($usuariosFiltrados as $usuario) {
                                 mostrarDatos($usuario);

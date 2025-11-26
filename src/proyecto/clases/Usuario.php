@@ -3,144 +3,151 @@
 class Usuario{
 
     public static int $contadorUsuarios = 0;
-//    private int $id;
+    private int $idUsuario;
     private string $nombreUsuario;
     private string $nombre;
-    private string $apellido;
-    private ?string $correo;
-    private string $contrasena;
+    private string $apellidos;
+    private ?string $email;
+    private string $password;
     private string $rol;
-
+    private string $fechaRegistro;
+    private ?string $foto;
     private bool $activo;
 
-    public function __construct($nombreUsuario, $nombre, $apellido, $correo, $contrasena)
-    {
-        $this->nombreUsuario = $nombreUsuario;
-        $this->nombre = $nombre;
-        $this->apellido = $apellido;
-        $this->correo = $correo;
-        $this->contrasena = $contrasena;
-        $this->rol = "admin";
-        $this->activo = false;
-        self::$contadorUsuarios++;
+    public function __construct(
+        $nombreUsuario = null,
+        $nombre = null,
+        $apellidos = null,
+        $email = null,
+        $password = null,
+        $rol = "usuario",
+        $foto = null
+    ) {
+        if($nombreUsuario !== null) {
+            $this->nombreUsuario = $nombreUsuario;
+            $this->nombre = $nombre;
+            $this->apellidos = $apellidos;
+            $this->email = $email;
+            $this->password = $password;
+            $this->foto = $foto;
+            $this->rol = $rol;
+            $this->fechaRegistro = date("Y-m-d");
+            $this->activo = false;
+            self::$contadorUsuarios++;
+        }
     }
 
-    /**
-     * @return string|null
-     */
-    public function getCorreo(): ?string
+
+    public static function getContadorUsuarios(): int
     {
-        return $this->correo;
+        return self::$contadorUsuarios;
     }
 
-    /**
-     * @return string
-     */
-    public function getContrasena(): string
+    public static function setContadorUsuarios(int $contadorUsuarios): void
     {
-        return $this->contrasena;
+        self::$contadorUsuarios = $contadorUsuarios;
     }
 
-    /**
-     * @return string
-     */
-    public function getNombre(): string
+    public function getIdUsuario(): int
     {
-        return $this->nombre;
+        return $this->idUsuario;
     }
 
-    /**
-     * @return string
-     */
-    public function getRol(): string
+    public function setIdUsuario(int $idUsuario): void
     {
-        return $this->rol;
+        $this->idUsuario = $idUsuario;
     }
 
-    /**
-     * @return string
-     */
     public function getNombreUsuario(): string
     {
         return $this->nombreUsuario;
     }
 
-    /**
-     * @return string
-     */
-    public function getApellido(): string
-    {
-        return $this->apellido;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActivo(): bool
-    {
-        return $this->activo;
-    }
-
-
-
-
-    /**
-     * @param string $nombre
-     * @return void
-     */
-    public function setNombre(string $nombre): void
-    {
-        $this->nombre = $nombre;
-    }
-
-    /**
-     * @param string|null $correo
-     * @return void
-     */
-    public function setCorreo(?string $correo): void
-    {
-        $this->correo = $correo;
-    }
-
-    /**
-     * @param string $contrasena
-     * @return void
-     */
-    public function setContrasena(string $contrasena): void
-    {
-        $this->contrasena = $contrasena;
-    }
-
-    /**
-     * @param string $rol
-     * @return void
-     */
-    public function setRol(string $rol): void
-    {
-        $this->rol = $rol;
-    }
-
-    /**
-     * @param string $nombreUsuario
-     * @return void
-     */
     public function setNombreUsuario(string $nombreUsuario): void
     {
         $this->nombreUsuario = $nombreUsuario;
     }
 
-    /**
-     * @return string
-     */
-    public function setApellido(string $apellido): void
+    public function getNombre(): string
     {
-        $this->apellido = $apellido;
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function getApellidos(): string
+    {
+        return $this->apellidos;
+    }
+
+    public function setApellidos(string $apellidos): void
+    {
+        $this->apellidos = $apellidos;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    public function getRol(): string
+    {
+        return $this->rol;
+    }
+
+    public function setRol(string $rol): void
+    {
+        $this->rol = $rol;
+    }
+
+    public function getFechaRegistro(): string
+    {
+        return $this->fechaRegistro;
+    }
+
+    public function setFechaRegistro(string $fechaRegistro): void
+    {
+        $this->fechaRegistro = $fechaRegistro;
+    }
+
+    public function getFoto(): ?string
+    {
+        return $this->foto;
+    }
+
+    public function setFoto(string $foto): void
+    {
+        $this->foto = $foto;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
     }
 
     public function setActivo(bool $activo): void
     {
         $this->activo = $activo;
     }
+
 
 
 
