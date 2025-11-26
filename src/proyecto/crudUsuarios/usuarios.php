@@ -3,13 +3,8 @@
     require_once "../libreria/controllUsuarios.php";
     require_once "../clases/Usuario.php";
     require_once "../conexiones/bbdd.php";
-
-    $resultado = $pdo->query("SELECT * FROM Usuario ;");
-    $usuarios = $resultado->fetchAll();
-
-
-
-   session_start();
+    session_start();
+    $pdo = conectarBD();
 //
 //    if (!empty($_POST["eliminar"])) {
 //        $correoEliminar = $_POST["eliminar"];
@@ -57,14 +52,14 @@ if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
 
     $terminoBusqueda = trim($_POST["buscar"]);
     $busqueda = "%{$terminoBusqueda}%";
-
-    $stmt = $pdo->prepare("SELECT * FROM Usuario WHERE Nombre LIKE :busqueda OR Email LIKE :busqueda");
-
-    $stmt->execute(["busqueda" => $busqueda]);
-    $usuariosFiltrados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "SELECT * FROM usuario WHERE nombre LIKE :busqueda OR email LIKE :busqueda";
+    $pdop = $pdo->prepare($sql);
+    $pdop->bindParam(":busqueda", $busqueda);
+    $pdop->bindParam(":busqueda", $busqueda);
+    $pdop->execute();
 
 } else {
-    $usuariosFiltrados = $pdo->query("SELECT * FROM Usuario")->fetchAll(PDO::FETCH_ASSOC);
+    $usuariosFiltrados = $pdo->query("SELECT * FROM usuario")->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>

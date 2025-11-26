@@ -170,7 +170,7 @@ function autenticarUsuario(string $correo, string $contrasena): bool
         echo "<tr>";
         echo "<td>" . $usuario["nombreUsuario"] . "</td>";
         echo "<td>" . $usuario["nombre"] . "</td>";
-        echo "<td>" . $usuario["apellidos"] . "</td>";
+        echo "<td>" . $usuario["apellido"] . "</td>";
         echo "<td>" . $usuario["email"] . "</td>";
         echo "<td>" . $usuario["rol"] . "</td>";
         echo "<td>";

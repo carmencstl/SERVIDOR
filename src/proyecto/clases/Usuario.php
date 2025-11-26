@@ -20,7 +20,7 @@ class Usuario{
         $this->apellido = $apellido;
         $this->correo = $correo;
         $this->contrasena = $contrasena;
-        $this->rol = "usuario";
+        $this->rol = "admin";
         $this->activo = false;
         self::$contadorUsuarios++;
     }
