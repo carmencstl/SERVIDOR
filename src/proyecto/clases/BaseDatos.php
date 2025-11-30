@@ -1,6 +1,4 @@
 <?php
-
-
     final class BaseDatos
     {
         private const DBHOST = "db";
