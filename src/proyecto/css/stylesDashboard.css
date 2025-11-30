@@ -104,3 +104,30 @@ body {
     color: #6c757d;
     margin: 0;
 }
+
+/* Badges personalizados para categorías y rareza */
+.badge-salud { background-color: #056B3B; }
+.badge-productividad { background-color: #05576B; }
+.badge-bienestar { background-color: #3C9CB4; }
+.badge-aprendizaje { background-color: #9B1426; }
+.badge-social { background-color: #0E3B47; }
+
+.badge-comun { background-color: #6c757d; }
+.badge-raro { background-color: #3C9CB4; }
+.badge-epico { background-color: #9B1426; }
+.badge-legendario {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 700;
+}
+
+/* Iconos grandes */
+.icono-habito, .icono-logro {
+    font-size: 1.5rem;
+    display: inline-block;
+}
+
+/* Estilos para dificultad */
+.badge-facil { background-color: #056B3B; }
+.badge-medio { background-color: #FFA500; }
+.badge-dificil { background-color: #9B1426; }

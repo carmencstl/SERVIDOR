@@ -71,7 +71,7 @@ else{
             </a>
         </div>
         <div class="col-md-4">
-            <a href="paths.php" class="menu-card">
+            <a href="crudHabitos/habitos.php" class="menu-card">
                 <div class="menu-icon">🎯</div>
                 <h4>Hábitos (Paths)</h4>
                 <p>Crear y editar paths, levels y missions</p>
