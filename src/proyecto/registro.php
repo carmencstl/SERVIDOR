@@ -1,31 +1,31 @@
 <?php
-require_once "conexiones/bbdd.php";
-require_once "libreria/controllUsuarios.php";
+require_once "clases/BaseDatos.php";
+require_once "clases/Sesion.php";
+require_once "clases/Auth.php";
 require_once "clases/Usuario.php";
 require_once "clases/Request.php";
 
-session_start();
-
-    $pdo = conectarBD();
-    $_SESSION["usuarioActual"] = $_SESSION["usuarioActual"] ?? null;
+    $baseDatos = BaseDatos::conectar();
+    $sesion = Sesion::getInstance();
+    $usuarioActual = $sesion->obtenerUsuario();
+    $auth = Auth::getInstance();
     $mensaje = "";
 
-if(empty($_SESSION["usuarioActual"])){
+if(empty($usuarioActual)){
     if(!empty($_POST)){
-
         $nombreUsuario = $_POST["nombreUsuario"] ?? "";
         $nombre = $_POST["nombre"] ?? "";
         $correo = $_POST["correo"] ?? "";
         $apellidos = $_POST["apellidos"] ?? "";
         $password = $_POST["password"] ?? "";
 
-        if (verificarUsuarioExistente($_POST["correo"])){
-            $mensaje = "El usuario o correo ya se encuentra registrado";
+        if ($auth->verificarUsuarioExistente($_POST["correo"])){
+            $mensaje = "❌ Ya existe un usuario con esos datos ";
         }
         else{
             $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellidos, $correo, $password);
-            agregarUsuario($nuevoUsuario);
-            $mensaje = "Usuario agregado correctamente";
+            $baseDatos->insertarUsuario($nuevoUsuario);
+            $mensaje = "✅ Usuario agregado correctamente";
         }
     }
 }
@@ -38,7 +38,7 @@ else{
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Gabit Dashboard</title>
+    <title>Registro - Gabit Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/stylesLogin.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,7 +85,7 @@ else{
         <div class="mt-3 text-center">
             <a href="login.php">Iniciar Sesión</a>
         </div>
-        <div class="mt-3 text-center text-danger ">
+        <div class="alert alert-<?= str_contains($mensaje, "❌") ? "danger" : "success" ?> mb-4" role="alert">
             <?php echo $mensaje; ?>
         </div>
     </form>

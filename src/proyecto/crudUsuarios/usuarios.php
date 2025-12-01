@@ -3,67 +3,110 @@
     require_once "../libreria/controllUsuarios.php";
     require_once "../clases/Usuario.php";
     require_once "../conexiones/bbdd.php";
+    require_once "../clases/BaseDatos.php";
 
-    $pdo = conectarBD();
-    $usuarios = $pdo->query("SELECT * FROM usuario");
+    $baseDatos = BaseDatos::conectar();
+    session_start();
+    $usuarioActual = $_SESSION["usuarioActual"];
 
-   session_start();
-
-   $usuarioActual = $_SESSION["usuarioActual"];
-//
-//    if (!empty($_POST["eliminar"])) {
-//        $correoEliminar = $_POST["eliminar"];
-//        deleteUser($correoEliminar);
-//        header("Location: usuarios.php");
-//
-//    }
-
+    $correoActualizar = "";
     $nombreUsuarioActualizar = "";
     $nombreActualizar = "";
-    $apellidoUsuarioActualizar = "";
     $apellidoActualizar = "";
-    $correoActualizar = "";
-    $rolActualizar = "";
-//
-//    if (!empty($_POST["actualizar"])) {
-//
-//        $correoBuscado = $_POST["actualizar"];
-//        $usuarioEncontrado = buscarUsuarioPorCorreo($correoBuscado);
-//
-//        if ($usuarioEncontrado) {
-//            $nombreUsuarioActualizar = $usuarioEncontrado->getNombreUsuario();
-//            $nombreActualizar = $usuarioEncontrado->getNombre();
-//            $apellidoActualizar = $usuarioEncontrado->getApellido();
-//            $correoActualizar = $usuarioEncontrado->getCorreo();
-//            $rolActualizar = $usuarioEncontrado->getRol();
-//        }
-//    }
+    $rolActualizar = "usuario";
 
-//    if (isset($_POST["guardar"])) {
-//        actualizarUsuarioExistente($_POST["correoOriginal"],
-//                $_POST["nombreActualizar"],
-//                $_POST["correoActualizar"],
-//                $_POST["rolActualizar"]);
-//    }
-//
-//    if(isset($_POST["crear"])) {
-//        crearNuevoUsuario($_POST["nombreActualizar"], $_POST["correoActualizar"]);
-//    }
+    $usuariosFiltrados = $baseDatos->todoUsuarios();
 
-    #BUSCAR
-    $terminoBusqueda = "";
-    if (isset($_POST["buscar"]) && !empty($_POST["buscar"])) {
+    #BORRAR USUARIO
+    if (!empty($_POST["eliminar"])) {
+        $correoEliminar = $_POST["eliminar"];
+        $baseDatos->borrarUsuario($correoEliminar);
+    }
 
-        $terminoBusqueda = trim($_POST["buscar"]);
-        $busqueda = "%{$terminoBusqueda}%";
+    #CARGAR DATOS PARA ACTUALIZAR
+    if (!empty($_POST["actualizar"])) {
+        $correoActualizar = $_POST["actualizar"];
+        $usuarioAEditar = $baseDatos->buscarUsuarioPorCorreo($correoActualizar);
+        $nombreUsuarioActualizar = $usuarioAEditar->getNombreUsuario();
+        $nombreActualizar = $usuarioAEditar->getNombre();
+        $apellidoActualizar = $usuarioAEditar->getApellidos();
+        $rolActualizar = $usuarioAEditar->getRol();
+    }
 
-        $sql = $pdo->prepare("SELECT * FROM usuario WHERE Nombre LIKE :busqueda OR Email LIKE :busqueda");
+    #ACTUALIZAR USUARIO
+    $mensaje = "";
 
-        $sql->execute(["busqueda" => $busqueda]);
-        $usuariosFiltrados = $sql->fetchAll(PDO::FETCH_ASSOC);
+    if (isset($_POST["guardar"])) {
+        $correoOriginal = $_POST["correoOriginal"];
+        $nombreUsuarioActualizar = $_POST["nombreUsuarioActualizar"];
+        $nombreActualizar = $_POST["nombreActualizar"];
+        $apellidoActualizar = $_POST["apellidoActualizar"];
+        $correoActualizar = $_POST["correoActualizar"];
+        $rolActualizar = $_POST["rolActualizar"];
+            $baseDatos->actualizarUsuario(
+                    $correoOriginal,
+                    $nombreUsuarioActualizar,
+                    $nombreActualizar,
+                    $apellidoActualizar,
+                    $correoActualizar,
+                    $rolActualizar
+            );
 
+        $mensaje = "✅ Usuario actualizado: $nombreUsuarioActualizar";
+        $usuariosFiltrados = $baseDatos->todoUsuarios();
+        $correoActualizar = "";
+        $nombreUsuarioActualizar = "";
+        $nombreActualizar = "";
+        $apellidoActualizar = "";
+        $rolActualizar = "usuario";
+    }
+
+    #CREAR USUARIO
+    if (isset($_POST["crear"])) {
+        $nombreUsuarioNuevo = $_POST["nombreUsuarioActualizar"];
+        $nombreNuevo = $_POST["nombreActualizar"];
+        $apellidosNuevo = $_POST["apellidoActualizar"];
+        $correoNuevo = $_POST["correoActualizar"];
+        $passwordNuevo = "password";
+        $rolNuevo = $_POST["rolActualizar"];
+
+        if($baseDatos->buscarUsuarioPorCorreo($correoNuevo) !== null) {
+            $mensaje = "❌ Error: El correo ya está registrado.";
+            $usuariosFiltrados = $baseDatos->todoUsuarios();
+            $correoActualizar = "";
+            $nombreUsuarioActualizar = "";
+            $nombreActualizar = "";
+            $apellidoActualizar = "";
+            $rolActualizar = "usuario";
+        }
+        else {
+            $nuevoUsuario = new Usuario(
+                    $nombreUsuarioNuevo,
+                    $nombreNuevo,
+                    $apellidosNuevo,
+                    $correoNuevo,
+                    $passwordNuevo,
+                    $rolNuevo
+            );
+
+            $baseDatos->insertarUsuario($nuevoUsuario);
+            $mensaje = "✅ Usuario creado: $nombreUsuarioNuevo";
+            $usuariosFiltrados = $baseDatos->todoUsuarios();
+            $correoActualizar = "";
+            $nombreUsuarioActualizar = "";
+            $nombreActualizar = "";
+            $apellidoActualizar = "";
+            $rolActualizar = "usuario";
+        }
+    }
+
+    #BUSCADOR
+    $terminoBusqueda = $_POST["buscar"] ?? "";
+    if(!empty($terminoBusqueda)) {
+        $baseDatos->buscar($terminoBusqueda);
+        $usuariosFiltrados = $baseDatos->todo();
     } else {
-        $usuariosFiltrados = $pdo->query("SELECT * FROM usuario")->fetchAll(PDO::FETCH_ASSOC);
+        $usuariosFiltrados = $baseDatos->todoUsuarios();
     }
 ?>
 <!DOCTYPE html>
@@ -105,6 +148,11 @@
 
     <div class="row">
         <div class="col-md-4">
+            <?php if(!empty($mensaje)): ?>
+                <div class="alert alert-<?= str_contains($mensaje, "❌") ? "danger" : "success" ?> mb-4" role="alert">
+                    <?= $mensaje ?>
+                </div>
+            <?php endif; ?>
             <form class="card p-4 shadow-sm" method="POST">
                 <h4 class="mb-3">Formulario de Usuario</h4>
 
@@ -112,7 +160,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Usuario</label>
-                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $nombreUsuarioActualizar ?>" required>
+                    <input type="text" class="form-control" name="nombreUsuarioActualizar" value="<?= $nombreUsuarioActualizar ?>" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
@@ -120,7 +168,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $apellidoActualizar ?>" required>
+                    <input type="text" class="form-control" name="apellidoActualizar" value="<?= $apellidoActualizar ?>" required>
                 </div>
 
                 <div class="mb-3">

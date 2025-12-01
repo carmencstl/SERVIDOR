@@ -1,19 +1,20 @@
 <?php
 require_once "libreria/layout.php";
-require_once "libreria/controllUsuarios.php";
 require_once "clases/Usuario.php";
-session_start();
+require_once "clases/BaseDatos.php";
+require_once "clases/Sesion.php";
+require_once "clases/Auth.php";
+require_once "clases/Request.php";
 
-$esAdmin = false;
-if(empty($_SESSION["usuarioActual"])) {
-    header("Location: login.php");
-}
-else{
-    $usuarioActual = $_SESSION["usuarioActual"];
-        if($usuarioActual->getRol() === "admin"){
-            $esAdmin = true;
-        }
-}
+    $baseDatos = BaseDatos::conectar();
+    $totalUsuarios = count($baseDatos->todoUsuarios());
+    $sesion = Sesion::getInstance();
+    $usuarioActual = $sesion->obtenerUsuario();
+    $esAdmin = Sesion::getInstance()->esAdmin();
+
+    if (empty($usuarioActual)) {
+        Request::redirect("login.php");
+    }
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +22,7 @@ else{
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gabit Admin</title>
+    <title>Dashboard - Gabit </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/stylesDashboard.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
@@ -35,7 +36,7 @@ else{
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="stat-icon">👥</div>
-                <h3><?= 2 ?></h3>
+                <h3><?=$totalUsuarios?></h3>
                 <p>Usuarios registrados</p>
             </div>
         </div>

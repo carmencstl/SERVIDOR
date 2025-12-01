@@ -1,28 +1,26 @@
 <?php
-require_once "libreria/controllUsuarios.php";
-require_once "clases/Usuario.php";
-session_start();
+    require_once "clases/BaseDatos.php";
+    require_once "clases/Sesion.php";
+    require_once "clases/Auth.php";
+    require_once "clases/Usuario.php";
+    require_once "clases/Request.php";
 
-    $correo = $_POST["correo"] ?? "";
-    $password = $_POST["password"] ?? "";
-    $mensaje = "";
-    $_SESSION["usuarioActual"] = $_SESSION["usuarioActual"] ?? null;
+    $baseDatos = BaseDatos::conectar();
+    $sesion = Sesion::getInstance();
+    $usuarioActual = $sesion->obtenerUsuario();
+    $auth = Auth::getInstance();
 
-    if(empty($_SESSION["usuarioActual"])) {
+    if(is_null($usuarioActual)) {
         if (!empty($_POST)) {
-            if (!autenticarUsuario($correo, $password)) {
-                $mensaje = "Correo o contraseña incorrectos";
+            if (!$auth->autenticarUsuario($_POST["correo"], $_POST["password"])) {
+                $mensaje = "❌ Correo o contraseña incorrectos";
             } else {
-                $usuario = buscarUsuarioPorCorreo($correo);
-                $_SESSION["usuarioActual"] = $usuario;
-                header("Location: dashboard.php");
-                exit();
+                Request::redirect("dashboard.php");
             }
         }
     }
-    else{
-        header("Location: dashboard.php");
-        exit();
+    else {
+        Request::redirect("dashboard.php");
     }
 
 ?>

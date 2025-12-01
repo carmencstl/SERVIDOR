@@ -164,21 +164,21 @@ function buscarUsuarioPorCorreo(string $correo): ?Usuario
      * @param $usuario
      * @return void
      */
-    function mostrarDatos($usuario): void
+    function mostrarDatos(Usuario $usuario): void
     {
         echo "<tr>";
-        echo "<td>" . $usuario["nombreUsuario"] . "</td>";
-        echo "<td>" . $usuario["nombre"] . "</td>";
-        echo "<td>" . $usuario["apellidos"] . "</td>";
-        echo "<td>" . $usuario["email"] . "</td>";
-        echo "<td>" . $usuario["rol"] . "</td>";
+        echo "<td>" . $usuario->getNombreUsuario() . "</td>";
+        echo "<td>" . $usuario->getNombre() . "</td>";
+        echo "<td>" . $usuario->getApellidos() . "</td>";
+        echo "<td>" . $usuario->getEmail() . "</td>";
+        echo "<td>" . $usuario->getRol() . "</td>";
         echo "<td>";
         echo "<form method=\"POST\" style=\"display:inline;\">";
-        echo "<input type=\"hidden\" name=\"actualizar\" value=\"" . $usuario["email"] . "\">";
-        echo "<button class=\"btn btn-sm btn-primary me-1\">Actualizar</button>";
+        echo "<input type=\"hidden\" name=\"actualizar\" value=\"" . $usuario->getEmail(). "\">";
+        echo "<button type=\"submit\" class=\"btn btn-sm btn-primary me-1\">Actualizar</button>";
         echo "</form>";
         echo "<form method=\"POST\" style=\"display:inline;\">";
-        echo "<input type=\"hidden\" name=\"eliminar\" value=\"" . $usuario["email"] . "\">";
+        echo "<input type=\"hidden\" name=\"eliminar\" value=\"" . $usuario->getEmail() . "\">";
         echo "<button type=\"submit\" class=\"btn btn-sm btn-danger\">Eliminar</button>";
         echo "</form>";
         echo "</td>";

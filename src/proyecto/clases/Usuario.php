@@ -4,9 +4,21 @@ class Usuario{
 
     public static int $contadorUsuarios = 0;
     private int $idUsuario;
-    private string $nombreUsuario;
-    private string $nombre;
-    private string $apellidos;
+    private string $nombreUsuario{
+        set{
+            $this->nombreUsuario = strtolower($value);
+        }
+    }
+    private string $nombre {
+        set{
+            $this->nombre = ucfirst($value);
+        }
+    }
+    private string $apellidos{
+        set{
+            $this->apellidos = ucwords($value);
+        }
+    }
     private ?string $email;
     private string $password;
     private string $rol;
@@ -19,7 +31,7 @@ class Usuario{
         $nombre = null,
         $apellidos = null,
         $email = null,
-        $password = null,
+        $password = "password",
         $rol = "usuario",
         $foto = null
     ) {
