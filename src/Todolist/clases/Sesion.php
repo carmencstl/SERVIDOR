@@ -9,9 +9,9 @@
     {
         private static ?Sesion $instancia=null;
 
-        public static function startSesion(): void
+        public static function activa(): bool
         {
-
+            return session_status() === PHP_SESSION_ACTIVE;
         }
         public static function login(): Sesion
         {

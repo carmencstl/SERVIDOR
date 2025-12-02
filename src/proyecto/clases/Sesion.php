@@ -31,7 +31,7 @@
 
         public function cerrarSesion(): void
         {
-            session_unset();
+            $_SESSION = [];
             session_destroy();
         }
 

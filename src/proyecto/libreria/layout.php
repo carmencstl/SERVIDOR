@@ -1,5 +1,5 @@
 <?php
-    require_once "../clases/Sesion.php";
+    require_once(__DIR__ . '/../clases/Sesion.php');
 
     /**
      * @param string $nombreUser

@@ -9,7 +9,7 @@
         private const DBHOST="db";
         private const USER="root";
         private const PASS="root";
-        private const DBNAM="pruebas";
+        private const DBNAM="toDoList";
 
         private static ?BaseDatos $db=null;
         private ?\PDO\Mysql $pdo; //esta es la conexion a la base de datos barra inicial para cosas de php
