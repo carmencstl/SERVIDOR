@@ -1,4 +1,7 @@
 <?php
+
+use Practicas\src\Sesion;
+
 require_once "libreria/layout.php";
 require_once "clases/Usuario.php";
 require_once "clases/BaseDatos.php";

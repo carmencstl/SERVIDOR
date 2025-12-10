@@ -1,5 +1,8 @@
 <?php
-    require_once "clases/BaseDatos.php";
+
+use Practicas\src\Sesion;
+
+require_once "clases/BaseDatos.php";
     require_once "clases/Sesion.php";
     require_once "clases/Auth.php";
     require_once "clases/Usuario.php";

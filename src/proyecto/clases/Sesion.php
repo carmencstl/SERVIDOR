@@ -11,10 +11,10 @@
             }
         }
 
-        public static function getInstance(): Sesion
+        public static function getInstance(): \Practicas\src\Sesion
         {
             if (self::$instance === null) {
-                self::$instance = new Sesion();
+                self::$instance = new \Practicas\src\Sesion();
             }
             return self::$instance;
         }

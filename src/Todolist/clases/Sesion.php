@@ -5,6 +5,8 @@
 
     //hacerlo singleton
     //controla todo lo relacionado con la sesion
+    use Practicas\src\Request;
+
     final class Sesion
     {
         private static ?Sesion $instancia=null;

@@ -6,4 +6,4 @@
     $_SESSION=[];
     session_destroy();
 
-    Clases\Request::redirect("index.php");
+    \Practicas\src\Request::redirect("index.php");

@@ -11,9 +11,9 @@
   require_once "./clases/Usuario.php";
   session_start();
 
-  use Clases\Usuario ;
+use Clases\Usuario;
 
-	if (isset($_SESSION["usuarioConectado"])):
+if (isset($_SESSION["usuarioConectado"])):
 		Request::redirect("index.php");
 	endif;
 
@@ -49,7 +49,7 @@
 	              $_SESSION["usuarioConectado"]=$user;
 		        $_SESSION["timepo"]=time();
                   # redirigimos
-              \Clases\Request::redirect("main.php");
+              \Practicas\src\Request::redirect("main.php");
               else: $mensaje = "El email o la contraseña son incorrectos." ;
 			  endif;
           else:

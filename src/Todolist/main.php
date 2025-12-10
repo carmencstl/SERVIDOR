@@ -8,11 +8,11 @@
 
   require_once "autoload.php" ;
   require_once "./libreria/database.php" ;
-  use \clases\Usuario;
-  use \clases\Request;
-  use \clases\Sesion;
-  use \clases\BaseDatos;
-  session_start();
+
+use clases\Sesion;
+use Practicas\src\Request;
+
+session_start();
 
   if (!isset($_SESSION["usuarioConectado"])):
 	Request::redirect("index.php");
