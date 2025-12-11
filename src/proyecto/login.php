@@ -1,7 +1,5 @@
 <?php
 
-use Practicas\src\Sesion;
-
 require_once "clases/BaseDatos.php";
     require_once "clases/Sesion.php";
     require_once "clases/Auth.php";
@@ -11,13 +9,13 @@ require_once "clases/BaseDatos.php";
     $baseDatos = BaseDatos::conectar();
     $sesion = Sesion::getInstance();
     $usuarioActual = $sesion->obtenerUsuario();
-    $auth = Auth::getInstance();
 
     if(is_null($usuarioActual)) {
         if (!empty($_POST)) {
-            if (!$auth->autenticarUsuario($_POST["correo"], $_POST["password"])) {
+            if (is_null(Usuario::comprobarCredenciales($_POST["correo"], $_POST["password"]))) {
                 $mensaje = "❌ Correo o contraseña incorrectos";
             } else {
+                $sesion->iniciarSesion(Usuario::buscarPorEmail($_POST["correo"]), "usuarioActual");
                 Request::redirect("dashboard.php");
             }
         }

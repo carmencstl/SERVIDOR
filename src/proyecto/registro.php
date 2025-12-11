@@ -1,6 +1,5 @@
 <?php
 
-use Practicas\src\Sesion;
 
 require_once "clases/BaseDatos.php";
 require_once "clases/Sesion.php";
@@ -11,8 +10,8 @@ require_once "clases/Request.php";
     $baseDatos = BaseDatos::conectar();
     $sesion = Sesion::getInstance();
     $usuarioActual = $sesion->obtenerUsuario();
-    $auth = Auth::getInstance();
-    $mensaje = "";
+//    $auth = Auth::getInstance();
+    $mensaje = null;
 
 if(empty($usuarioActual)){
     if(!empty($_POST)){
@@ -22,12 +21,12 @@ if(empty($usuarioActual)){
         $apellidos = $_POST["apellidos"] ?? "";
         $password = $_POST["password"] ?? "";
 
-        if ($auth->verificarUsuarioExistente($_POST["correo"])){
+        if (Usuario::buscarPorEmail($_POST["correo"])){
             $mensaje = "❌ Ya existe un usuario con esos datos ";
         }
         else{
             $nuevoUsuario = new Usuario($nombreUsuario, $nombre, $apellidos, $correo, $password);
-            $baseDatos->insertarUsuario($nuevoUsuario);
+            $nuevoUsuario->insertarUsuario();
             $mensaje = "✅ Usuario agregado correctamente";
         }
     }

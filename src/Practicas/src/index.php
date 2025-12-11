@@ -15,14 +15,8 @@ if (isset($_POST) && !isset($_POST["eliminar"]) && !isset($_POST["actualizar"]))
         $mensaje = "El usuario ya existe";
     }
     else{
-        $usuario = new User(
-                nombreUsuario: $username,
-                nombre: $name,
-                apellidos: $apellidos,
-                email: $email,
-                password: $password,
-                rol: "usuario"
-        );
+        $usuario = new User(nombreUsuario: $username, nombre: $name,
+                            apellidos: $apellidos, email: $email, password: $password, rol: "usuario");
         $usuario->insertarUsuario();
         $mensaje = "";
         $name = "";

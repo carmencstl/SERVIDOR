@@ -38,7 +38,7 @@ Editar el archivo `database/Database.php` y ajustar las credenciales:
 
 ```php
 private $host = 'localhost';
-private $dbname = 'blogify';
+private $dbname = 'practicaParaExamen';
 private $username = 'root';
 private $password = '';
 ```

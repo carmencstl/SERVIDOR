@@ -1,6 +1,5 @@
 <?php
 
-use Practicas\src\Sesion;
 
 require_once "libreria/layout.php";
 require_once "clases/Usuario.php";
@@ -10,7 +9,7 @@ require_once "clases/Auth.php";
 require_once "clases/Request.php";
 
     $baseDatos = BaseDatos::conectar();
-    $totalUsuarios = count($baseDatos->todoUsuarios());
+    $totalUsuarios = count(Usuario::devolverUsuarios());
     $sesion = Sesion::getInstance();
     $usuarioActual = $sesion->obtenerUsuario();
     $esAdmin = Sesion::getInstance()->esAdmin();

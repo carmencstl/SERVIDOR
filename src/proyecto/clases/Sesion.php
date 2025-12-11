@@ -11,10 +11,10 @@
             }
         }
 
-        public static function getInstance(): \Practicas\src\Sesion
+        public static function getInstance(): Sesion
         {
             if (self::$instance === null) {
-                self::$instance = new \Practicas\src\Sesion();
+                self::$instance = new Sesion();
             }
             return self::$instance;
         }
@@ -24,9 +24,9 @@
             return $_SESSION["usuarioActual"] ?? null;
         }
 
-        public function iniciarSesion(Usuario $usuario): void
+        public function iniciarSesion(Usuario $usuario, string $sesion): void
         {
-            $_SESSION["usuarioActual"] = $usuario;
+            $_SESSION[$sesion] = $usuario;
         }
 
         public function cerrarSesion(): void

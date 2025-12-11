@@ -41,10 +41,10 @@ final class DataBase
         return $this->pdo;
     }
 
-    /**
-     * Metodo que instancia la clase (Singleton)
-     * @return DataBase
-     */                             //Revisar nombre de la clase
+        /**
+         * Metodo que instancia la clase (Singleton)
+         * @return \PDO\Mysql
+         */                             //Revisar nombre de la clase
     public static function conectar(): PDO\Mysql
     {
         if (is_null(self::$instance)) self::$instance = new DataBase();

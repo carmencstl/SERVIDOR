@@ -156,7 +156,7 @@ class User
 
     /**
      * Devuelve los usuarios que coinciden con un filtro específico.
-     * @param string $filtro El campo por el que filtrar (e.g., 'nombre', 'email').
+     * @param string $filtro El campo por el que filtrar (e.g., "nombre", "email").
      * @param string $valor El valor a buscar en el campo especificado.
      * @return array Un array de objetos User que coinciden con el filtro.
      */

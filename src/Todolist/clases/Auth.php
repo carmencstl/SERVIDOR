@@ -30,7 +30,7 @@
 
 
 
-        public static function conectar():
+        public static function conectar(): void
         {
             if(Sesion::activa()){
 

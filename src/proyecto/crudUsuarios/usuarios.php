@@ -4,110 +4,76 @@
     require_once "../clases/Usuario.php";
     require_once "../conexiones/bbdd.php";
     require_once "../clases/BaseDatos.php";
+    require_once "../clases/Sesion.php";
+    require_once "../clases/Request.php";
 
     $baseDatos = BaseDatos::conectar();
-    session_start();
-    $usuarioActual = $_SESSION["usuarioActual"];
+    $sesion = Sesion::getInstance();
+    $usuarioActual = $sesion->obtenerUsuario();
 
-    $correoActualizar = "";
-    $nombreUsuarioActualizar = "";
-    $nombreActualizar = "";
-    $apellidoActualizar = "";
-    $rolActualizar = "usuario";
-
-    $usuariosFiltrados = $baseDatos->todoUsuarios();
-
-    #BORRAR USUARIO
-    if (!empty($_POST["eliminar"])) {
-        $correoEliminar = $_POST["eliminar"];
-        $baseDatos->borrarUsuario($correoEliminar);
-    }
-
-    #CARGAR DATOS PARA ACTUALIZAR
-    if (!empty($_POST["actualizar"])) {
-        $correoActualizar = $_POST["actualizar"];
-        $usuarioAEditar = $baseDatos->buscarUsuarioPorCorreo($correoActualizar);
-        $nombreUsuarioActualizar = $usuarioAEditar->getNombreUsuario();
-        $nombreActualizar = $usuarioAEditar->getNombre();
-        $apellidoActualizar = $usuarioAEditar->getApellidos();
-        $rolActualizar = $usuarioAEditar->getRol();
-    }
-
-    #ACTUALIZAR USUARIO
     $mensaje = "";
-
-    if (isset($_POST["guardar"])) {
-        $correoOriginal = $_POST["correoOriginal"];
-        $nombreUsuarioActualizar = $_POST["nombreUsuarioActualizar"];
-        $nombreActualizar = $_POST["nombreActualizar"];
-        $apellidoActualizar = $_POST["apellidoActualizar"];
-        $correoActualizar = $_POST["correoActualizar"];
-        $rolActualizar = $_POST["rolActualizar"];
-            $baseDatos->actualizarUsuario(
-                    $correoOriginal,
-                    $nombreUsuarioActualizar,
-                    $nombreActualizar,
-                    $apellidoActualizar,
-                    $correoActualizar,
-                    $rolActualizar
-            );
-
-        $mensaje = "✅ Usuario actualizado: $nombreUsuarioActualizar";
-        $usuariosFiltrados = $baseDatos->todoUsuarios();
-        $correoActualizar = "";
-        $nombreUsuarioActualizar = "";
-        $nombreActualizar = "";
-        $apellidoActualizar = "";
-        $rolActualizar = "usuario";
-    }
-
-    #CREAR USUARIO
-    if (isset($_POST["crear"])) {
-        $nombreUsuarioNuevo = $_POST["nombreUsuarioActualizar"];
-        $nombreNuevo = $_POST["nombreActualizar"];
-        $apellidosNuevo = $_POST["apellidoActualizar"];
-        $correoNuevo = $_POST["correoActualizar"];
-        $passwordNuevo = "password";
-        $rolNuevo = $_POST["rolActualizar"];
-
-        if($baseDatos->buscarUsuarioPorCorreo($correoNuevo) !== null) {
-            $mensaje = "❌ Error: El correo ya está registrado.";
-            $usuariosFiltrados = $baseDatos->todoUsuarios();
-            $correoActualizar = "";
-            $nombreUsuarioActualizar = "";
-            $nombreActualizar = "";
-            $apellidoActualizar = "";
-            $rolActualizar = "usuario";
-        }
-        else {
-            $nuevoUsuario = new Usuario(
-                    $nombreUsuarioNuevo,
-                    $nombreNuevo,
-                    $apellidosNuevo,
-                    $correoNuevo,
-                    $passwordNuevo,
-                    $rolNuevo
-            );
-
-            $baseDatos->insertarUsuario($nuevoUsuario);
-            $mensaje = "✅ Usuario creado: $nombreUsuarioNuevo";
-            $usuariosFiltrados = $baseDatos->todoUsuarios();
-            $correoActualizar = "";
-            $nombreUsuarioActualizar = "";
-            $nombreActualizar = "";
-            $apellidoActualizar = "";
-            $rolActualizar = "usuario";
-        }
-    }
-
-    #BUSCADOR
+    $usuarioEditar = null;
     $terminoBusqueda = $_POST["buscar"] ?? "";
-    if(!empty($terminoBusqueda)) {
-        $baseDatos->buscar($terminoBusqueda);
-        $usuariosFiltrados = $baseDatos->todo();
-    } else {
-        $usuariosFiltrados = $baseDatos->todoUsuarios();
+
+
+    # ELIMINAR USUARIO
+    if(isset($_POST["eliminar"])){
+        Usuario::eliminarUsuario($_POST["eliminar"]);
+        $mensaje = "✅ Usuario eliminado.";
+        Request::redirect("usuarios.php");
     }
+
+    # CARGAR DATOS PARA EDITAR
+    if(isset($_POST["actualizar"])) {
+        $usuarioEditar = Usuario::buscarPorEmail($_POST["actualizar"]);
+    }
+
+    # GUARDAR USUARIO (Crear o Actualizar)
+    if(isset($_POST["guardar"]) || isset($_POST["crear"])) {
+        $esActualizacion = isset($_POST["guardar"]);
+
+        if($esActualizacion) {
+
+            $usuario = Usuario::buscarPorEmail($_POST["correoOriginal"]);
+            $usuario->setNombreUsuario($_POST["nombreUsuario"]);
+            $usuario->setNombre($_POST["nombre"]);
+            $usuario->setApellidos($_POST["apellidos"]);
+            $usuario->setEmail($_POST["correo"]);
+            $usuario->setRol($_POST["rol"]);
+            $usuario->actualizarUsuario();
+
+            $mensaje = "✅ Usuario actualizado: " . $_POST["nombreUsuario"];
+        } else {
+
+            if(Usuario::buscarPorEmail($_POST["correo"]) !== null) {
+                $mensaje = "❌ Error: El correo ya está registrado.";
+                $usuarioEditar = (object)[
+                        'nombreUsuario' => $_POST["nombreUsuario"],
+                        'nombre' => $_POST["nombre"],
+                        'apellidos' => $_POST["apellidos"],
+                        'email' => $_POST["correo"],
+                        'rol' => $_POST["rol"]
+                ];
+            } else {
+                $nuevoUsuario = new Usuario(
+                        $_POST["nombreUsuario"],
+                        $_POST["nombre"],
+                        $_POST["apellidos"],
+                        $_POST["correo"],
+                        "password",
+                        $_POST["rol"]
+                );
+                $nuevoUsuario->insertarUsuario();
+                $mensaje = "✅ Usuario creado: " . $_POST["nombreUsuario"];
+            }
+        }
+    }
+
+    # Buscar o listar todos
+    $usuariosFiltrados = !empty($terminoBusqueda)
+            ? Usuario::devolverUsuarioPorFiltro($terminoBusqueda)
+            : Usuario::devolverUsuarios();
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -121,17 +87,22 @@
 </head>
 <body>
 <?= mostrarNav($usuarioActual->getNombre()) ?>
+
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Gestión de Usuarios</h1>
         <a href="../dashboard.php" class="btn btn-outline-secondary">← Volver al Dashboard</a>
     </div>
+
+    <!-- Buscador -->
     <div class="row mb-4">
         <div class="col-md-8 mx-auto">
             <form method="POST" class="card p-3 shadow-sm">
                 <h5 class="mb-3">Buscar Usuario</h5>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" name="buscar" value="<?= $terminoBusqueda ?>" placeholder="Ingrese nombre o correo">
+                    <input type="text" class="form-control" name="buscar"
+                           value="<?= ($terminoBusqueda) ?>"
+                           placeholder="Buscar...">
                     <button type="submit" class="btn btn-primary">Buscar</button>
                     <?php if(!empty($terminoBusqueda)): ?>
                         <a href="usuarios.php" class="btn btn-outline-secondary">Limpiar</a>
@@ -139,7 +110,7 @@
                 </div>
                 <?php if(!empty($terminoBusqueda)): ?>
                     <small class="text-muted mt-2">
-                        Mostrando <?= count($usuariosFiltrados) ?> resultado(s) para "<?= $terminoBusqueda ?>"
+                        Mostrando <?= count($usuariosFiltrados) ?> resultado(s) para "<?= ($terminoBusqueda) ?>"
                     </small>
                 <?php endif; ?>
             </form>
@@ -153,48 +124,70 @@
                     <?= $mensaje ?>
                 </div>
             <?php endif; ?>
-            <form class="card p-4 shadow-sm" method="POST">
-                <h4 class="mb-3">Formulario de Usuario</h4>
 
-                <input type="hidden" name="correoOriginal" value="<?= $correoActualizar ?>">
+            <form class="card p-4 shadow-sm" method="POST">
+                <h4 class="mb-3">
+                    <?= $usuarioEditar ? "Editar Usuario" : "Crear Usuario" ?>
+                </h4>
+
+                <?php if($usuarioEditar): ?>
+                    <input type="hidden" name="correoOriginal" value="<?= $usuarioEditar->getEmail() ?>">
+                <?php endif; ?>
 
                 <div class="mb-3">
                     <label class="form-label">Usuario</label>
-                    <input type="text" class="form-control" name="nombreUsuarioActualizar" value="<?= $nombreUsuarioActualizar ?>" required>
+                    <input type="text" class="form-control" name="nombreUsuario"
+                           value="<?= $usuarioEditar?->getNombreUsuario() ?? '' ?>" required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control" name="nombreActualizar" value="<?= $nombreActualizar ?>" required>
+                    <input type="text" class="form-control" name="nombre"
+                           value="<?= $usuarioEditar?->getNombre() ?? '' ?>" required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" name="apellidoActualizar" value="<?= $apellidoActualizar ?>" required>
+                    <input type="text" class="form-control" name="apellidos"
+                           value="<?= $usuarioEditar?->getApellidos() ?? '' ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" name="correoActualizar" value="<?= $correoActualizar ?>" required>
+                    <input type="email" class="form-control" name="correo"
+                           value="<?= $usuarioEditar?->getEmail() ?? '' ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Rol</label>
-                    <select class="form-select" name="rolActualizar">
-                        <option value="admin" <?= $rolActualizar == "admin" ? "selected" : "" ?>>Admin</option>
-                        <option value="usuario" <?= $rolActualizar == "usuario" ? "selected" : "" ?>>Usuario</option>
+                    <select class="form-select" name="rol">
+                        <?php
+                            $rolActual = $usuarioEditar?->getRol() ?? "usuario";
+                        ?>
+                        <option value="admin" <?= $rolActual == "admin" ? "selected" : "" ?>>Admin</option>
+                        <option value="usuario" <?= $rolActual == "usuario" ? "selected" : "" ?>>Usuario</option>
                     </select>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" name="guardar" class="btn btn-warning flex-fill">Actualizar</button>
-                    <button type="submit" name="crear" class="btn btn-success flex-fill">Crear</button>
+                    <?php if($usuarioEditar): ?>
+                        <button type="submit" name="guardar" class="btn btn-warning flex-fill">
+                            Actualizar
+                        </button>
+                        <a href="usuarios.php" class="btn btn-outline-secondary flex-fill">
+                            Cancelar
+                        </a>
+                    <?php else: ?>
+                        <button type="submit" name="crear" class="btn btn-success w-100">
+                            Crear Usuario
+                        </button>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>
-
         <div class="col-md-8">
             <div class="card p-3 shadow-sm">
                 <h4 class="mb-3">Usuarios Registrados</h4>
-
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -207,15 +200,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <?php
-                        if(empty($usuariosFiltrados)) {
-                            echo "<tr><td colspan='6' class='text-center text-muted'>No se encontraron usuarios</td></tr>";
-                        } else {
-                            foreach ($usuariosFiltrados as $usuario) {
-                                mostrarDatos($usuario);
-                            }
-                        }
-                    ?>
+                    <?php if(empty($usuariosFiltrados)): ?>
+                        <tr>
+                            <td colspan='6' class='text-center text-muted'>
+                                No se encontraron usuarios
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach($usuariosFiltrados as $usuario): ?>
+                            <?php mostrarDatos($usuario); ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
