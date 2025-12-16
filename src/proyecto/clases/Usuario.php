@@ -1,5 +1,7 @@
 <?php
 
+use config\BaseDatos;
+
 class Usuario{
 
     public static int $contadorUsuarios = 0;

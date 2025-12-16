@@ -1,19 +1,34 @@
 <?php
-    require_once "../libreria/layout.php";
-    require_once "../libreria/controllUsuarios.php";
-    require_once "../clases/Usuario.php";
-    require_once "../conexiones/bbdd.php";
-    require_once "../clases/Habito.php";
 
-    $pdo = conectarBD();
+use config\BaseDatos;
 
-    session_start();
+require_once "../libreria/layout.php";
+require_once "../clases/Usuario.php";
+require_once "../clases/BaseDatos.php";
+require_once "../clases/Sesion.php";
+require_once "../clases/Request.php";
+require_once "../clases/BaseDatos.php";
+require_once "../clases/Habito.php";
+    $baseDatos = BaseDatos::conectar();
+    $sesion = Sesion::getInstance();
+    $usuarioActual = $sesion->obtenerUsuario();
 
-    $usuarioActual = $_SESSION["usuarioActual"];
-    $sql = "SELECT * FROM camino";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $habitos = $stmt->fetchAll(PDO::FETCH_CLASS, "Habito");
+
+    if (empty($usuarioActual)) {
+        Request::redirect("../login.php");
+    }
+
+    $terminoBusqueda = $_POST["buscar"] ?? "";
+    $categoriaFiltro = $_POST["categoria"] ?? "";
+
+    if (!empty($terminoBusqueda) || !empty($categoriaFiltro)) {
+        $habitosFiltrados = Habito::buscarConFiltros($terminoBusqueda, $categoriaFiltro);
+    }
+    else {
+        $habitosFiltrados = Habito::devolverTodosHabitos();
+    }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -132,10 +147,10 @@
                     </thead>
                     <tbody>
                     <?php
-                    if(empty($habitos)) {
+                    if(empty($habitosFiltrados)) {
                         echo "<tr><td colspan='7' class='text-center text-muted'>No se encontraron hábitos</td></tr>";
                     } else {
-                        foreach ($habitos as $habito) {
+                        foreach ($habitosFiltrados as $habito) {
                             $habito->mostrarHabito($habito);
                         }
                     }

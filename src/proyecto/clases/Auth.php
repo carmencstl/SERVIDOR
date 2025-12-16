@@ -1,6 +1,8 @@
 <?php
 
-    require_once "BaseDatos.php";
+use config\BaseDatos;
+
+require_once "BaseDatos.php";
     require_once "Usuario.php";
 
     class Auth

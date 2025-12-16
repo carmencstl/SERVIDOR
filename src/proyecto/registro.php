@@ -1,6 +1,8 @@
 <?php
 
 
+use config\BaseDatos;
+
 require_once "clases/BaseDatos.php";
 require_once "clases/Sesion.php";
 require_once "clases/Auth.php";

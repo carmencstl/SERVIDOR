@@ -1,5 +1,7 @@
 <?php
 
+use config\BaseDatos;
+
 class Habito {
 
     public static int $contadorHabitos = 0;
@@ -26,6 +28,82 @@ class Habito {
             self::$contadorHabitos++;
         }
     }
+
+
+    public function insertarHabito(): void
+    {
+        $db = BaseDatos::conectar();
+        $usuarioActual = Sesion::getInstance()->obtenerUsuario()->getIdUsuario();
+
+        $stmt = $db->prepare("INSERT INTO camino (nombre, descripcion, autor, categoria) 
+            VALUES (:nombre, :descripcion, :autor, :categoria)");
+        $stmt->bindParam(':nombre', $this->nombre);
+        $stmt->bindParam(':descripcion', $this->descripcion);
+        $stmt->bindParam(':autor', $usuarioActual);
+        $stmt->bindParam(':categoria', $this->categoria);
+        $stmt->execute();
+    }
+
+    public static function devolverTodosHabitos(): array
+    {
+        $db = BaseDatos::conectar();
+        $sql = "SELECT * FROM camino";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $habito = $stmt->fetchAll(PDO::FETCH_CLASS, Habito::class);
+        return $habito;
+    }
+
+    public static function devolverHabitoPorFiltro(string $valor): array
+    {
+        $db = BaseDatos::conectar();
+
+        $termino = trim($valor);
+        $sql = "SELECT * FROM camino WHERE LOWER(nombre) LIKE :valor
+                                            OR LOWER(descripcion) LIKE :valor
+                                            OR LOWER(autor) LIKE :valor
+                                            OR LOWER(categoria) LIKE :valor";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([":valor" => "%$valor%"]);
+
+        $habitos = $stmt->fetchAll(PDO::FETCH_CLASS, Habito::class);
+
+        return $habitos;
+    }
+
+
+    public static function devolverHabitoPorCategoria(string $categoria): array
+    {
+        $db = BaseDatos::conectar();
+        $sql = "SELECT * FROM camino WHERE categoria = :categoria";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':categoria', $categoria);
+        $stmt->execute();
+        $habito = $stmt->fetchAll(PDO::FETCH_CLASS, Habito::class);
+        return $habito;
+    }
+
+    public static function buscarConFiltros(string $termino = "", string $categoria = ""): array
+    {
+        $resultado = [];
+
+        if (empty($termino) && empty($categoria)) {
+            $resultado = self::devolverTodosHabitos();
+        } elseif (!empty($termino) && empty($categoria)) {
+            $resultado = self::devolverHabitoPorFiltro($termino);
+        } elseif (empty($termino) && !empty($categoria)) {
+            $resultado = self::devolverHabitoPorCategoria($categoria);
+        } else {
+            $habitosPorTermino = self::devolverHabitoPorFiltro($termino);
+            $resultado = array_filter($habitosPorTermino, function($habito) use ($categoria) {
+                return $habito->getCategoria() === $categoria;
+            });
+        }
+
+        return $resultado;
+    }
+
 
     public static function getContadorHabitos(): int
     {
@@ -87,13 +165,16 @@ class Habito {
         $this->categoria = $categoria;
     }
 
-    public function mostrarHabito(): void
+
+
+
+    public function mostrarHabito(Habito $habito): void
     {
         echo "<tr>";
-        echo "<td>" . $this->nombre . "</td>";
-        echo "<td>" . $this->descripcion . "</td>";
-        echo "<td>" . $this->autor . "</td>";
-        echo "<td>" . $this->categoria . "</td>";
+        echo "<td>" . $habito->getNombre() . "</td>";
+        echo "<td>" . $habito->getDescripcion() . "</td>";
+        echo "<td>" . $habito->getCategoria() . "</td>";
+        echo "<td>" . $habito->getAutor() . "</td>";
         echo "<td>";
         echo "<form method=\"POST\" style=\"display:inline;\">";
         echo "<input type=\"hidden\" name=\"actualizar\" value=\"" . $this->idCamino  . "\">";
