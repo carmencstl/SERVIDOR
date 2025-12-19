@@ -1,0 +1,28 @@
+services:
+
+  web:
+    container_name: dwes-proyecto
+    build: .
+    volumes:
+        - ./crudGabit:/var/www/html
+    ports:
+        - "80:80"
+    depends_on:
+        - db
+
+    db:
+        container_name: dwes-db
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: servidorDAW
+        volumes:
+            - mysql_data:/var/lib/mysql
+        phpmyadmin:
+            image: phpmyadmin/phpmyadmin
+            container_name: dwes-phpmyadmin
+            environment:
+                PMA_HOST: db
+                MYSQL_ROOT_PASSWORD: root
+            ports:
+                - "8080:80"
