@@ -26,6 +26,12 @@ class ComposerStaticInit6a6772df2521c6860a448e9115f2793a
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
+        'C' =>
+        array (
+            'CrudGabit\\Modelos\\' => 18,
+            'CrudGabit\\Controladores\\' => 24,
+            'CrudGabit\\Config\\' => 17,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -40,6 +46,18 @@ class ComposerStaticInit6a6772df2521c6860a448e9115f2793a
         'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'CrudGabit\\Modelos\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/Modelos',
+        ),
+        'CrudGabit\\Controladores\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/Controladores',
+        ),
+        'CrudGabit\\Config\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/config',
         ),
     );
 

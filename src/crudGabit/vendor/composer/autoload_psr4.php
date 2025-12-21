@@ -9,4 +9,7 @@ return array(
     'Twig\\' => array($vendorDir . '/twig/twig/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'CrudGabit\\Modelos\\' => array($baseDir . '/Modelos'),
+    'CrudGabit\\Controladores\\' => array($baseDir . '/Controladores'),
+    'CrudGabit\\Config\\' => array($baseDir . '/config'),
 );

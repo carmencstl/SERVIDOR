@@ -1,9 +1,9 @@
 <?php
 
-    namespace Clases ;
+    namespace CrudGabit\Config ;
 
-    use config\Session;
-    use Modelos\Usuario;
+    use CrudGabit\Config\Session;
+    use CrudGabit\Modelos\Usuario ;
 
     final class Auth
     {
@@ -17,7 +17,7 @@
             $usuario = Usuario::getByEmailAndPassword($email, $pass) ;
 
             # iniciamos sesión si se ha encontrado el usuario
-            if (is_object($usuario)) Sesion::init($usuario) ;
+            if (is_object($usuario)) Session::init($usuario) ;
 
             #
             return is_object($usuario) ;
@@ -29,8 +29,8 @@
         public static function user(): Usuario|false
         {
             # si hay una sesión activa recuperamos el usuario
-            if (Sesion::active()):
-                return Usuario::getById(Sesion::get("id")) ;
+            if (Session::active()):
+                return Usuario::getById(Session::get("id")) ;
             endif ;
 
             return false ;
@@ -40,7 +40,7 @@
          * Verificar rol del usuario actual
          * @return bool
          */
-        public static function checkRol(): bool
+        public static function checkRol(): string
         {
             $usuario = self::user();
             $resultado = false;
@@ -58,7 +58,7 @@
         public static function logout(): void
         {
 
-            Sesion::logout() ;
+            Session::logout() ;
         }
 
 

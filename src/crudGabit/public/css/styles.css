@@ -1,0 +1,229 @@
+:root {
+    --primary: #05576B;
+    --primary-dark: #0E3B47;
+    --primary-light: #3C9CB4;
+    --accent-green: #056B3B;
+    --accent-red: #9B1426;
+    --white: #FFFFFF;
+}
+
+* { font-family: 'Epilogue', sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Fraunces', serif; }
+
+body {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(5, 87, 107, 0.2);
+    padding: 2.5rem;
+    max-width: 450px;
+    width: 100%;
+}
+
+.login-card h1 {
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.subtitle {
+    color: #6c757d;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-icon {
+    width: 80px;
+    height: 80px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(5, 87, 107, 0.15);
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #044d2f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(5, 107, 59, 0.3);
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.demo-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+}
+
+
+:root {
+    --primary: #05576B;
+    --primary-dark: #0E3B47;
+    --primary-light: #3C9CB4;
+    --accent-green: #056B3B;
+    --accent-orange: #FA914F;
+    --accent-yellow: #F2D639;
+    --neutral-bg: #F0F6F6;
+    --white: #FFFFFF;
+}
+
+* { font-family: 'Epilogue', sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Fraunces', serif; }
+
+body {
+    background: var(--neutral-bg);
+    min-height: 100vh;
+}
+
+.navbar {
+    background: var(--primary) !important;
+    box-shadow: 0 2px 10px rgba(5, 87, 107, 0.1);
+}
+
+.navbar-brand {
+    color: var(--white) !important;
+    font-weight: 700;
+    font-family: 'Fraunces', serif;
+}
+
+.navbar-text {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.btn-outline-light:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+.container-main {
+    padding: 2rem 0;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.stat-card p {
+    color: #6c757d;
+    margin: 0.5rem 0 0 0;
+    font-weight: 500;
+}
+
+.stat-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.menu-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(5, 87, 107, 0.15);
+}
+
+.menu-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.menu-card h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.menu-card p {
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Badges personalizados para categorías y rareza */
+.badge-salud { background-color: #056B3B; }
+.badge-productividad { background-color: #05576B; }
+.badge-bienestar { background-color: #3C9CB4; }
+.badge-aprendizaje { background-color: #9B1426; }
+.badge-social { background-color: #0E3B47; }
+
+.badge-comun { background-color: #6c757d; }
+.badge-raro { background-color: #3C9CB4; }
+.badge-epico { background-color: #9B1426; }
+.badge-legendario {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 700;
+}
+
+/* Iconos grandes */
+.icono-habito, .icono-logro {
+    font-size: 1.5rem;
+    display: inline-block;
+}
+
+/* Estilos para dificultad */
+.badge-facil { background-color: #056B3B; }
+.badge-medio { background-color: #FFA500; }
+.badge-dificil { background-color: #9B1426; }
