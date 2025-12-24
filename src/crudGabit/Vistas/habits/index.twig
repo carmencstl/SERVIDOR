@@ -1,0 +1,74 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Gestión de Hábitos - Gabit{% endblock %}
+
+{% block body_class %}page-habitos{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestión de Hábitos</h1>
+        <a href="/crudGabit/dashboard" class="btn btn-outline-secondary">← Volver al Dashboard</a>
+    </div>
+    <div class="mb-4">
+        <a href="/crudGabit/habits/create" class="btn btn-primary">+ Nuevo Hábito</a>
+    </div>
+    <div class="row mb-4">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="card p-3 shadow-sm">
+                    <h4 class="mb-3">Hábitos Registrados</h4>
+                    <table class="table table-hover align-middle p-5">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Autor</th>
+                            <th>Categoría</th>
+                            <th style="width: 25%" class="text-start">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if habits is empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No se encontraron hábitos
+                                </td>
+                            </tr>
+                        {% else %}
+                            {% for habit in habits %}
+                                <tr>
+                                    <td>{{ habit.nombre }}</td>
+                                    <td>{{ habit.descripcion }}</td>
+                                    <td>{{ habit.nombreAutor }}</td>
+                                    <td>{{ habit.categoria }}</td>
+                                    <td>
+                                        <form method="POST" action="/crudGabit/habits/edit" style="display:inline">
+                                            <input type="hidden" name="idCamino" value="{{ habit.idCamino }}">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                Editar
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/crudGabit/habits/delete" style="display:inline">
+                                            <input type="hidden" name="idCamino" value="{{  habit.idCamino}}">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if success %}
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    {{ success }}
+                </div>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

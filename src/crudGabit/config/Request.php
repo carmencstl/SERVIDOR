@@ -4,10 +4,9 @@ namespace CrudGabit\Config;
 
 final class Request
 {
-    private function __construct() {}
 
     /**
-     * Verificar si el método HTTP coincide
+     * Verificar si el método HTTP coincide con el dado
      * @param string $method
      * @return bool
      */
@@ -30,8 +29,12 @@ final class Request
      * Obtener todos los datos POST
      * @return array
      */
-    public static function post(): array
+    public static function post(?string $key = null) : array|string|null
     {
+        if ($key) {
+            return $_POST[$key] ?? null;
+        }
+
         return $_POST;
     }
 
@@ -50,7 +53,7 @@ final class Request
      */
     public static function isPost(): bool
     {
-        return self::isMethod('POST');
+        return self::isMethod("POST");
     }
 
     /**
@@ -59,31 +62,31 @@ final class Request
      */
     public static function isGet(): bool
     {
-        return self::isMethod('GET');
+        return self::isMethod("GET");
     }
 
     /**
-     * Redirigir a URL
+     * Redirigir a URL con base /crudGabit
      * @param string $url
      * @return never
      */
-    // En Router.php sugerencia de mejora:
     public static function redirect(string $path): void
     {
-        // Si el path no empieza con el nombre del proyecto, se lo añadimos
-        if (strpos($path, '/crudGabit') === false) {
-            $path = '/crudGabit' . (str_starts_with($path, '/') ? $path : '/' . $path);
+        if (strpos($path, "/crudGabit") === false) {
+            $path = "/crudGabit" . (str_starts_with($path, "/") ? $path : "/" . $path);
         }
         header("Location: {$path}");
         exit;
     }
+
+
     /**
      * Obtener método HTTP actual
      * @return string
      */
     public static function method(): string
     {
-        return $_SERVER['REQUEST_METHOD'];
+        return $_SERVER["REQUEST_METHOD"];
     }
 
     /**
@@ -92,6 +95,6 @@ final class Request
      */
     public static function uri(): string
     {
-        return $_SERVER['REQUEST_URI'];
+        return $_SERVER["REQUEST_URI"];
     }
 }

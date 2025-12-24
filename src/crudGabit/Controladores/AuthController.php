@@ -3,31 +3,32 @@
 namespace CrudGabit\Controladores;
 
 use CrudGabit\Config\Auth;
+use CrudGabit\Config\Router;
 use CrudGabit\Config\Session;
 use CrudGabit\Config\Request;
 use CrudGabit\Modelos\Usuario;
 
-class AuthController
+class AuthController extends BaseController
 {
-    private $twig;
 
-    public function __construct()
-    {
-        $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../Vistas');
-        $this->twig = new \Twig\Environment($loader);
-    }
 
+    /**
+     * Mostrar formulario de login
+     * @return void
+     */
     public function showLogin(): void
     {
-        // Si ya hay sesión, vamos al dashboard del proyecto
-        if (Session::active()) {
-            Request::redirect("/crudGabit/dashboard");
-            return;
-        }
-
-        echo $this->twig->render("auth/login.twig");
+        if (Session::active()):
+            Request::redirect("/dashboard");
+        endif ;
+        echo $this->render("auth/login.twig");
     }
 
+
+    /**
+     * Procesar login
+     * @return void
+     */
     public function login(): void
     {
         $email = Request::get("email");
@@ -37,65 +38,68 @@ class AuthController
             Request::redirect("/crudGabit/dashboard");
         }
         else{
-            echo $this->twig->render("auth/login.twig", [
+            echo $this->render("auth/login.twig", [
                 "error" => "Los datos de acceso son incorrectos"
             ]);
         }
-
     }
 
+    /**
+     * Mostrar formulario de registro
+     * @return void
+     */
     public function showRegister(): void
     {
-        if (Session::active()) {
-            Request::redirect("/crudGabit/dashboard");
-            return;
+        if(Session::active()) {
+            Request::redirect("/dashboard");
         }
-
-        echo $this->twig->render("auth/register.twig");
+        echo $this->render("auth/register.twig");
     }
+
 
     public function register(): void
     {
-        $nombreUsuario = Request::get("nombreUsuario");
-        $nombre = Request::get("nombre");
-        $apellidos = Request::get("apellidos");
         $email = Request::get("email");
-        $password = Request::get("password");
-
+        $nombreUsuario = Request::get("nombreUsuario");
         $resultado = null;
 
-        // Verificar si el email ya existe
-        if (is_object(Usuario::buscarPorEmail($email))) {
-            $resultado = $this->twig->render("auth/register.twig", [
-                "error" => "El email ya está registrado"
+        if (is_object(Usuario::getByEmail($email))) {
+            $resultado = $this->render("auth/register.twig", [
+                "error" => "El email ya está registrado. Por favor, usa otro email."
+            ]);
+        } elseif (is_object(Usuario::getByNombreUsuario($nombreUsuario))) {
+            $resultado = $this->render("auth/register.twig", [
+                "error" => "El nombre de usuario ya está en uso. Por favor, elige otro."
             ]);
         } else {
-            // Crear usuario
-            $usuario = new Usuario(
+            $usuario = Usuario::crear(
                 $nombreUsuario,
-                $nombre,
-                $apellidos,
+                Request::get("nombre"),
+                Request::get("apellidos"),
                 $email,
-                $password,
+                Request::get("password"),
                 "usuario"
             );
 
             if ($usuario->insertarUsuario()) {
-                Auth::login($email, $password);
+                Auth::login($email, Request::get("password"));
                 $resultado = Request::redirect("/dashboard");
             } else {
-                $resultado = $this->twig->render("auth/register.twig", [
-                    "error" => "Error al crear el usuario"
+                $resultado = $this->render("auth/register.twig", [
+                    "error" => "Error al crear el usuario. Inténtalo de nuevo."
                 ]);
             }
         }
-
         echo $resultado;
     }
 
+    /**
+     * Cerrar sesión
+     * @return void
+     */
     public function logout(): void
     {
         Auth::logout();
-        Request::redirect('/crudGabit/login');
+        Request::redirect("/crudGabit/login");
     }
 }

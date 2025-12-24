@@ -1,13 +1,9 @@
 <?php
 
 namespace CrudGabit\Config;
-
-/**
- * Clase Session - Gestión de sesiones
- */
 class Session
 {
-    private const TIEMPO_EXPIRACION = 3600; // 1 hora en segundos
+    private const TIEMPO_EXPIRACION = 3600;
 
     /**
      * Iniciar sesión PHP
@@ -15,15 +11,9 @@ class Session
     private static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
-            // Configuramos la cookie para que sea válida en todo el localhost
-            session_set_cookie_params([
-                'lifetime' => 0,
-                'path' => '/', // Importante: '/' permite que se lea en todas las subcarpetas
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ]);
             session_start();
         }
+
         self::verificarExpiracion();
     }
 
@@ -35,9 +25,10 @@ class Session
     {
         self::start();
 
-        $userId = $usuario->getId();
+        // Regenerar ID de sesión por seguridad
+        session_regenerate_id(true);
 
-        $_SESSION["id"] = $userId;
+        $_SESSION["id"] = $usuario->getId();
         $_SESSION["tiempo_inicio"] = time();
         $_SESSION["ultima_actividad"] = time();
     }
@@ -50,25 +41,38 @@ class Session
     {
         self::start();
 
-        return isset($_SESSION["id"]) && isset($_SESSION["ultima_actividad"]);
+        return isset($_SESSION["id"]);
     }
 
     /**
      * Cerrar sesión
-     * @return void
      */
     public static function logout(): void
     {
-        self::start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $_SESSION = [];
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+
         session_destroy();
     }
 
     /**
      * Obtener valor de sesión
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
      */
     public static function get(string $key, $default = null)
     {
@@ -78,9 +82,6 @@ class Session
 
     /**
      * Establecer valor en sesión
-     * @param string $key
-     * @param mixed $value
-     * @return void
      */
     public static function set(string $key, $value): void
     {
@@ -90,8 +91,6 @@ class Session
 
     /**
      * Verificar si existe una clave
-     * @param string $key
-     * @return bool
      */
     public static function has(string $key): bool
     {
@@ -101,8 +100,6 @@ class Session
 
     /**
      * Eliminar una clave
-     * @param string $key
-     * @return void
      */
     public static function delete(string $key): void
     {
@@ -112,17 +109,19 @@ class Session
 
     /**
      * Verificar y gestionar expiración de sesión
-     * @return void
      */
     private static function verificarExpiracion(): void
     {
-        if (isset($_SESSION["ultima_actividad"])) {
-            $tiempoInactivo = time() - $_SESSION["ultima_actividad"];
+        if (!isset($_SESSION["ultima_actividad"])) {
+            return;
+        }
 
-            if ($tiempoInactivo > self::TIEMPO_EXPIRACION) {
-                self::logout();
-                return;
-            }
+        $tiempoInactivo = time() - $_SESSION["ultima_actividad"];
+
+        if ($tiempoInactivo > self::TIEMPO_EXPIRACION) {
+            $_SESSION = [];
+            session_destroy();
+            return;
         }
 
         $_SESSION["ultima_actividad"] = time();
@@ -130,26 +129,23 @@ class Session
 
     /**
      * Obtener tiempo restante de sesión
-     * @return int
      */
     public static function getTiempoRestante(): int
     {
         self::start();
 
-        $resultado = 0;
-
-        if (isset($_SESSION["ultima_actividad"])) {
-            $tiempoTranscurrido = time() - $_SESSION["ultima_actividad"];
-            $tiempoRestante = self::TIEMPO_EXPIRACION - $tiempoTranscurrido;
-            $resultado = max(0, $tiempoRestante);
+        if (!isset($_SESSION["ultima_actividad"])) {
+            return 0;
         }
 
-        return $resultado;
+        $tiempoTranscurrido = time() - $_SESSION["ultima_actividad"];
+        $tiempoRestante = self::TIEMPO_EXPIRACION - $tiempoTranscurrido;
+
+        return max(0, $tiempoRestante);
     }
 
     /**
-     * Renovar sesión
-     * @return void
+     * Renovar sesión manualmente
      */
     public static function renovarSesion(): void
     {

@@ -8,6 +8,7 @@
     final class Auth
     {
         /**
+         * Iniciar sesión
          * @param string $email
          * @param string $pass
          * @return boolean
@@ -16,48 +17,54 @@
         {
             $usuario = Usuario::getByEmailAndPassword($email, $pass) ;
 
-            # iniciamos sesión si se ha encontrado el usuario
             if (is_object($usuario)) Session::init($usuario) ;
 
-            #
+            return is_object($usuario) ;
+        }
+
+        public static function comprobarUsuario(string $email): bool
+        {
+            $usuario = Usuario::getByEmail($email) ;
             return is_object($usuario) ;
         }
 
         /**
+         * Obtener el usuario actual
          * @return Usuario|false
          */
         public static function user(): Usuario|false
         {
-            # si hay una sesión activa recuperamos el usuario
+            $res = false ;
             if (Session::active()):
-                return Usuario::getById(Session::get("id")) ;
+                $res =  Usuario::getById(Session::get("id")) ;
             endif ;
-
-            return false ;
+            return $res ;
         }
 
         /**
          * Verificar rol del usuario actual
-         * @return bool
+         * @return string
          */
-        public static function checkRol(): string
+        public static function checkRol(): bool
         {
-            $usuario = self::user();
             $resultado = false;
 
-            if ($usuario) {
-                $resultado = Usuario::comprobarRol($usuario->getId());
+            if (Session::active()) {
+            $usuario = self::user();
+                if ($usuario) {
+                    $resultado = Usuario::comprobarRol($usuario->getId());
+                }
             }
-
-            return $resultado;
+            return $resultado === "admin";
         }
 
+
         /**
+         * Cerrar sesión
          * @return void
          */
         public static function logout(): void
         {
-
             Session::logout() ;
         }
 

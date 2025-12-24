@@ -14,13 +14,13 @@
         /**
          * @return \Practicas\src\Sesion
          */
-        public static function init(): \Practicas\src\Sesion
-        {
-            if (self::$instance === null) {
-                self::$instance = new \Practicas\src\Sesion();
-            }
-            return self::$instance;
-        }
+//        public static function init(): \Practicas\src\Sesion
+//        {
+//            if (self::$instance === null) {
+//                self::$instance =
+//            }
+//            return self::$instance;
+//        }
 
         /**
          * @param string $clave

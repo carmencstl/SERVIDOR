@@ -29,6 +29,7 @@ class ComposerStaticInit6a6772df2521c6860a448e9115f2793a
         'C' =>
         array (
             'CrudGabit\\Modelos\\' => 18,
+            'CrudGabit\\Enums\\' => 16,
             'CrudGabit\\Controladores\\' => 24,
             'CrudGabit\\Config\\' => 17,
         ),
@@ -50,6 +51,10 @@ class ComposerStaticInit6a6772df2521c6860a448e9115f2793a
         'CrudGabit\\Modelos\\' =>
         array (
             0 => __DIR__ . '/../..' . '/Modelos',
+        ),
+        'CrudGabit\\Enums\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/Enums',
         ),
         'CrudGabit\\Controladores\\' =>
         array (

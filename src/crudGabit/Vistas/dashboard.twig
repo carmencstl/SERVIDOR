@@ -1,70 +1,70 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gabit </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/crudGabit/public/css/styles.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-<div class="container container-main">
-    <h1 class="mb-4">Panel de Control</h1>
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <h3><?=$totalUsuarios?></h3>
-                <p>Usuarios registrados</p>
+{% extends "layouts/base.twig" %}
+
+{% block title %}Dashboard - Gabit{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1 class="mb-4">Dashboard</h1>
+        <div class="row g-4">
+            {% if isAdmin %}
+                <div class="col-md-4">
+                    <a href="users" class="stat-card usuarios">
+                        <div class="stat-icon">👥</div>
+                        <h3>{{ stats.totalUsuarios }}</h3>
+                        <p>Usuarios Registrados</p>
+                    </a>
+                </div>
+            {% endif %}
+            <div class="col-md-4">
+                <a href="habits" class="stat-card habitos">
+                    <div class="stat-icon">✅</div>
+                    <h3>{{ stats.totalHabitos }}</h3>
+                    <p>Hábitos Creados</p>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="achievements" class="stat-card logros">
+                    <div class="stat-icon">🏆</div>
+                    <h3>{{ stats.totalLogros }}</h3>
+                    <p>Logros Creados</p>
+                </a>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <h3><?= 3?></h3>
-                <p>Paths creados</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <h3><?= 3 ?></h3>
-                <p>Misiones activas</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <h3><?= 5 ?></h3>
-                <p>Logros disponibles</p>
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>{% if isAdmin %}Panel de Administración{% else %}Mis Hábitos y Logros{% endif %}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {% if isAdmin %}
+                                <div class="col-md-4">
+                                    <a href="users" class="menu-card usuarios-menu">
+                                        <div class="menu-icon">👥</div>
+                                        <h4>Gestionar Usuarios</h4>
+                                        <p>Ver, crear y editar usuarios</p>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <div class="col-md-{% if isAdmin %}4{% else %}6{% endif %}">
+                                <a href="habits" class="menu-card habitos-menu">
+                                    <div class="menu-icon">✅</div>
+                                    <h4>Mis Hábitos</h4>
+                                    <p>{% if isAdmin %}Administrar hábitos del sistema{% else %}Crea y sigue tus hábitos{% endif %}</p>
+                                </a>
+                            </div>
+                            <div class="col-md-{% if isAdmin %}4{% else %}6{% endif %}">
+                                <a href="achievements" class="menu-card logros-menu">
+                                    <div class="menu-icon">🏆</div>
+                                    <h4>Mis Logros</h4>
+                                    <p>{% if isAdmin %}Configurar logros y recompensas{% else %}Desbloquea nuevos logros{% endif %}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <h2 class="mb-4">Gestión</h2>
-    <div class="row g-4">
-        <div class="col-md-4" style="display: <?= $esAdmin ? 'block' : 'none' ?>;">
-            <a href="users" class="menu-card">
-                <div class="menu-icon">👥</div>
-                <h4>Usuarios</h4>
-                <p>Gestionar usuarios y administradores</p>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="habits" class="menu-card">
-                <div class="menu-icon">🎯</div>
-                <h4>Hábitos (Paths)</h4>
-                <p>Crear y editar paths, levels y missions</p>
-            </a>
-        </div>
-        <div class="col-md-4" style="display: <?= $esAdmin ? 'block' : 'none' ?>; ">
-            <a href="achievements" class="menu-card">
-                <div class="menu-icon">🏆</div>
-                <h4>Logros</h4>
-                <p>Administrar achievements y recompensas</p>
-            </a>
-        </div>
-    </div>
-</div>
-</body>
-</html>
+{% endblock %}

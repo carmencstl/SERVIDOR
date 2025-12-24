@@ -13,17 +13,26 @@ final class DataBase {
     private static ?DataBase $instance = null;
     private ?PDO $pdo = null;
 
-    private function __construct() {
+
+    /**
+     * Constructor privado para evitar instanciación externa
+     */
+    private function __construct()
+    {
         try {
             $dsn = "mysql:host=" . self::DBHOST . ";dbname=" . self::DBNAME . ";charset=utf8";
-            // CORRECCIÓN: Usar la clase PDO estándar de PHP
-            $this->pdo = new PDO($dsn, self::DBUSER, self::DBPASS);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("ERROR DE CONEXIÓN: " . $e->getMessage());
+            $this->pdo = PDO\Mysql::connect($dsn, self::DBUSER, self::DBPASS); #De clase PDO\MySQL
+
+        } catch (PDOException $pdoe) {
+            die("ERROR {$pdoe->getMessage()}");
         }
+        return $this->pdo;
     }
 
+    /**
+     * Obtiene la instancia única de la clase DataBase
+     * @return DataBase
+     */
     public static function getInstance(): DataBase {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -31,10 +40,18 @@ final class DataBase {
         return self::$instance;
     }
 
+    /**
+     * Obtiene la conexión PDO
+     * @return PDO
+     */
     public function getConnection(): PDO {
         return $this->pdo;
     }
 
+    /**
+     * Método estático para obtener la conexión PDO directamente
+     * @return PDO
+     */
     public static function connect(): PDO {
         return self::getInstance()->getConnection();
     }

@@ -1,18 +1,93 @@
+/* ========================================
+   VARIABLES GLOBALES - PALETA GABIT
+   ======================================== */
 :root {
+    /* Colores principales */
     --primary: #05576B;
     --primary-dark: #0E3B47;
     --primary-light: #3C9CB4;
+
+    /* Colores de acento */
     --accent-green: #056B3B;
     --accent-red: #9B1426;
+    --accent-orange: #FA914F;
+    --accent-yellow: #F2D639;
+
+    /* Neutros */
+    --neutral-bg: #E8EFEF;
+    --neutral-dark: #D4DEDE;
     --white: #FFFFFF;
+    --text-muted: #6c757d;
+
+    /* Colores por CRUD */
+    --color-usuarios: #05576B;
+    --color-usuarios-light: #3C9CB4;
+    --color-usuarios-dark: #0E3B47;
+
+    --color-habitos: #056B3B;
+    --color-habitos-light: #0a9951;
+    --color-habitos-dark: #044d2f;
+
+    --color-logros: #FA914F;
+    --color-logros-light: #fbb07d;
+    --color-logros-dark: #e07a3a;
 }
 
-* { font-family: 'Epilogue', sans-serif; }
-h1, h2, h3, h4, h5, h6 { font-family: 'Fraunces', serif; }
+/* ========================================
+   TIPOGRAFÍA BASE
+   ======================================== */
+* {
+    font-family: "Epilogue", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Fraunces", serif;
+    font-weight: 700;
+}
+
+/* ========================================
+   LAYOUT GENERAL
+   ======================================== */
 body {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    background: var(--neutral-bg);
     min-height: 100vh;
+}
+
+.container-main {
+    padding: 2rem 0;
+}
+
+/* ========================================
+   NAVBAR
+   ======================================== */
+.navbar {
+    background: var(--primary) !important;
+    box-shadow: 0 2px 10px rgba(5, 87, 107, 0.1);
+}
+
+.navbar-brand {
+    color: var(--white) !important;
+    font-weight: 700;
+    font-family: "Fraunces", serif;
+}
+
+.navbar-text {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.btn-outline-light:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+/* ========================================
+   LOGIN / AUTH PAGES
+   ======================================== */
+body.auth-page {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,7 +110,7 @@ body {
 }
 
 .subtitle {
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 2rem;
     text-align: center;
 }
@@ -50,6 +125,9 @@ body {
     height: 80px;
 }
 
+/* ========================================
+   FORMULARIOS
+   ======================================== */
 .form-label {
     font-weight: 600;
     color: var(--primary-dark);
@@ -67,13 +145,19 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(5, 87, 107, 0.15);
 }
 
+/* ========================================
+   BOTONES BASE
+   ======================================== */
+.btn {
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+}
+
 .btn-primary {
     background: var(--accent-green);
     border: none;
-    padding: 0.75rem;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.2s;
 }
 
 .btn-primary:hover {
@@ -82,73 +166,53 @@ body {
     box-shadow: 0 5px 15px rgba(5, 107, 59, 0.3);
 }
 
-.alert {
-    border-radius: 8px;
+.btn-danger {
+    background: var(--accent-red);
+    border: none;
 }
 
-.demo-info {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-top: 1.5rem;
-    font-size: 0.875rem;
+.btn-danger:hover {
+    background: #7a0f1d;
 }
 
-
-:root {
-    --primary: #05576B;
-    --primary-dark: #0E3B47;
-    --primary-light: #3C9CB4;
-    --accent-green: #056B3B;
-    --accent-orange: #FA914F;
-    --accent-yellow: #F2D639;
-    --neutral-bg: #F0F6F6;
-    --white: #FFFFFF;
+.btn-outline-secondary {
+    border: 2px solid var(--text-muted);
+    color: var(--text-muted);
 }
 
-* { font-family: 'Epilogue', sans-serif; }
-h1, h2, h3, h4, h5, h6 { font-family: 'Fraunces', serif; }
-
-body {
-    background: var(--neutral-bg);
-    min-height: 100vh;
+.btn-outline-secondary:hover {
+    background: var(--text-muted);
+    color: var(--white);
 }
 
-.navbar {
-    background: var(--primary) !important;
-    box-shadow: 0 2px 10px rgba(5, 87, 107, 0.1);
+/* ========================================
+   CARDS
+   ======================================== */
+.card {
+    background: var(--white);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.navbar-brand {
-    color: var(--white) !important;
-    font-weight: 700;
-    font-family: 'Fraunces', serif;
-}
-
-.navbar-text {
-    color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.btn-outline-light:hover {
-    background: var(--primary-light);
-    border-color: var(--primary-light);
-}
-
-.container-main {
-    padding: 2rem 0;
-}
-
+/* ========================================
+   DASHBOARD - STAT CARDS
+   ======================================== */
 .stat-card {
     background: var(--white);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-left: 4px solid transparent;
 }
 
 .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .stat-card h3 {
@@ -158,16 +222,94 @@ body {
 }
 
 .stat-card p {
-    color: #6c757d;
+    color: var(--text-muted);
     margin: 0.5rem 0 0 0;
     font-weight: 500;
 }
 
-.stat-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+/* Colores por tipo */
+.stat-card.usuarios {
+    border-left-color: var(--color-usuarios);
+}
+.stat-card.usuarios h3 {
+    color: var(--color-usuarios);
+}
+.stat-card.usuarios:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(5, 87, 107, 0.05) 100%);
 }
 
+.stat-card.habitos {
+    border-left-color: var(--color-habitos);
+}
+.stat-card.habitos h3 {
+    color: var(--color-habitos);
+}
+.stat-card.habitos:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(5, 107, 59, 0.05) 100%);
+}
+
+.stat-card.logros {
+    border-left-color: var(--color-logros);
+}
+.stat-card.logros h3 {
+    color: var(--color-logros);
+}
+.stat-card.logros:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(250, 145, 79, 0.05) 100%);
+}
+
+/* ========================================
+   DASHBOARD - MENU CARDS CON COLORES
+   ======================================== */
+.menu-card.usuarios-menu {
+    border-left: 4px solid var(--color-usuarios);
+}
+
+.menu-card.usuarios-menu:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(5, 87, 107, 0.05) 100%);
+    border-color: var(--color-usuarios);
+}
+
+.menu-card.usuarios-menu h4 {
+    color: var(--color-usuarios);
+}
+
+.menu-card.habitos-menu {
+    border-left: 4px solid var(--color-habitos);
+}
+
+.menu-card.habitos-menu:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(5, 107, 59, 0.05) 100%);
+    border-color: var(--color-habitos);
+}
+
+.menu-card.habitos-menu h4 {
+    color: var(--color-habitos);
+}
+
+.menu-card.logros-menu {
+    border-left: 4px solid var(--color-logros);
+}
+
+.menu-card.logros-menu:hover {
+    background: linear-gradient(135deg, var(--white) 0%, rgba(250, 145, 79, 0.05) 100%);
+    border-color: var(--color-logros);
+}
+
+.menu-card.logros-menu h4 {
+    color: var(--color-logros);
+}
+
+body.auth-page {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========================================
+   MENU CARDS (Dashboard)
+   ======================================== */
 .menu-card {
     background: var(--white);
     border-radius: 12px;
@@ -197,33 +339,327 @@ body {
 }
 
 .menu-card p {
-    color: #6c757d;
+    color: var(--text-muted);
     margin: 0;
 }
 
-/* Badges personalizados para categorías y rareza */
-.badge-salud { background-color: #056B3B; }
-.badge-productividad { background-color: #05576B; }
-.badge-bienestar { background-color: #3C9CB4; }
-.badge-aprendizaje { background-color: #9B1426; }
-.badge-social { background-color: #0E3B47; }
+/* ========================================
+   TABLAS
+   ======================================== */
+.table {
+    margin: 0;
+}
 
-.badge-comun { background-color: #6c757d; }
-.badge-raro { background-color: #3C9CB4; }
-.badge-epico { background-color: #9B1426; }
+.table thead {
+    background: var(--neutral-dark);
+}
+
+.table thead th {
+    font-weight: 600;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* ========================================
+   BADGES
+   ======================================== */
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.badge.bg-danger {
+    background: var(--accent-red) !important;
+}
+
+.badge.bg-secondary {
+    background: var(--text-muted) !important;
+}
+
+/* Categorías de hábitos */
+.badge-salud { background-color: var(--accent-green); }
+.badge-productividad { background-color: var(--primary); }
+.badge-bienestar { background-color: var(--primary-light); }
+.badge-aprendizaje { background-color: var(--accent-red); }
+.badge-social { background-color: var(--primary-dark); }
+
+/* Rareza de logros */
+.badge-comun { background-color: var(--text-muted); }
+.badge-raro { background-color: var(--primary-light); }
+.badge-epico { background-color: var(--accent-red); }
 .badge-legendario {
     background: linear-gradient(135deg, #FFD700, #FFA500);
     color: #000;
     font-weight: 700;
 }
 
-/* Iconos grandes */
-.icono-habito, .icono-logro {
+/* Dificultad */
+.badge-facil { background-color: var(--accent-green); }
+.badge-medio { background-color: var(--accent-orange); }
+.badge-dificil { background-color: var(--accent-red); }
+
+/* ========================================
+   ICONOS
+   ======================================== */
+.icono-habito,
+.icono-logro {
     font-size: 1.5rem;
     display: inline-block;
 }
 
-/* Estilos para dificultad */
-.badge-facil { background-color: #056B3B; }
-.badge-medio { background-color: #FFA500; }
-.badge-dificil { background-color: #9B1426; }
+/* ========================================
+   ALERTAS
+   ======================================== */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.demo-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+}
+
+/* ========================================
+   PÁGINAS POR CRUD - USUARIOS (AZUL)
+   ======================================== */
+.page-usuarios {
+    background: linear-gradient(135deg, rgba(5, 87, 107, 0.08) 0%, var(--neutral-bg) 100%);
+}
+
+.page-usuarios .card {
+    border-top: 4px solid var(--color-usuarios);
+}
+
+.page-usuarios .card-header {
+    background: var(--color-usuarios);
+    color: var(--white);
+    border-radius: 12px 12px 0 0;
+}
+
+.page-usuarios .card-header h1,
+.page-usuarios .card-header h4 {
+    color: var(--white);
+    margin: 0;
+}
+
+.page-usuarios .btn-primary {
+    background: var(--color-usuarios);
+    border: none;
+}
+
+.page-usuarios .btn-primary:hover {
+    background: var(--color-usuarios-dark);
+    transform: translateY(-2px);
+}
+
+.page-usuarios .btn-outline-secondary {
+    border-color: var(--color-usuarios);
+    color: var(--color-usuarios);
+}
+
+.page-usuarios .btn-outline-secondary:hover {
+    background: var(--color-usuarios);
+    color: var(--white);
+}
+
+.page-usuarios .table thead {
+    background: var(--color-usuarios-light);
+    color: var(--white);
+}
+
+.page-usuarios .table thead th {
+    color: var(--white);
+    border-bottom: 2px solid var(--color-usuarios);
+}
+
+.page-usuarios .badge.bg-danger {
+    background: var(--color-usuarios-dark) !important;
+}
+
+.page-usuarios .form-control:focus {
+    border-color: var(--color-usuarios);
+    box-shadow: 0 0 0 0.2rem rgba(5, 87, 107, 0.15);
+}
+
+/* ========================================
+   PÁGINAS POR CRUD - HÁBITOS (VERDE)
+   ======================================== */
+.page-habitos {
+    background: linear-gradient(135deg, rgba(5, 107, 59, 0.08) 0%, var(--neutral-bg) 100%);
+}
+
+.page-habitos .card {
+    border-top: 4px solid var(--color-habitos);
+}
+
+.page-habitos .card-header {
+    background: var(--color-habitos);
+    color: var(--white);
+    border-radius: 12px 12px 0 0;
+}
+
+.page-habitos .card-header h1,
+.page-habitos .card-header h4 {
+    color: var(--white);
+    margin: 0;
+}
+
+.page-habitos .btn-primary {
+    background: var(--color-habitos);
+    border: none;
+}
+
+.page-habitos .btn-primary:hover {
+    background: var(--color-habitos-dark);
+    transform: translateY(-2px);
+}
+
+.page-habitos .btn-outline-secondary {
+    border-color: var(--color-habitos);
+    color: var(--color-habitos);
+}
+
+.page-habitos .btn-outline-secondary:hover {
+    background: var(--color-habitos);
+    color: var(--white);
+}
+
+.page-habitos .table thead {
+    background: var(--color-habitos-light);
+    color: var(--white);
+}
+
+.page-habitos .table thead th {
+    color: var(--white);
+    border-bottom: 2px solid var(--color-habitos);
+}
+
+.page-habitos .form-control:focus {
+    border-color: var(--color-habitos);
+    box-shadow: 0 0 0 0.2rem rgba(5, 107, 59, 0.15);
+}
+
+/* ========================================
+   PÁGINAS POR CRUD - LOGROS (NARANJA)
+   ======================================== */
+.page-logros {
+    background: linear-gradient(135deg, rgba(250, 145, 79, 0.10) 0%, var(--neutral-bg) 100%);
+}
+
+.page-logros .card {
+    border-top: 4px solid var(--color-logros);
+}
+
+.page-logros .card-header {
+    background: var(--color-logros);
+    color: var(--white);
+    border-radius: 12px 12px 0 0;
+}
+
+.page-logros .card-header h1,
+.page-logros .card-header h4 {
+    color: var(--white);
+    margin: 0;
+}
+
+.page-logros .btn-primary {
+    background: var(--color-logros);
+    border: none;
+}
+
+.page-logros .btn-primary:hover {
+    background: var(--color-logros-dark);
+    transform: translateY(-2px);
+}
+
+.page-logros .btn-outline-secondary {
+    border-color: var(--color-logros);
+    color: var(--color-logros);
+}
+
+.page-logros .btn-outline-secondary:hover {
+    background: var(--color-logros);
+    color: var(--white);
+}
+
+.page-logros .table thead {
+    background: var(--color-logros-light);
+    color: var(--white);
+}
+
+.page-logros .table thead th {
+    color: var(--white);
+    border-bottom: 2px solid var(--color-logros);
+}
+
+.page-logros .form-control:focus {
+    border-color: var(--color-logros);
+    box-shadow: 0 0 0 0.2rem rgba(250, 145, 79, 0.15);
+}
+
+.page-logros .badge-legendario {
+    background: linear-gradient(135deg, #FFD700, var(--color-logros));
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(250, 145, 79, 0.4);
+}
+/* ========================================
+   FIX PARA TABLAS - TEXTO VISIBLE
+   ======================================== */
+
+/* Usuarios */
+.page-usuarios .table thead th {
+    color: var(--white) !important;
+    background: var(--color-usuarios-light);
+}
+
+/* Hábitos */
+.page-habitos .table thead th {
+    color: var(--white) !important;
+    background: var(--color-habitos-light);
+}
+
+/* Logros */
+.page-logros .table thead th {
+    color: var(--white) !important;
+    background: var(--color-logros-light);
+}
+
+/* Registro más compacto */
+.register-card {
+    max-width: 550px;
+    padding: 2rem;
+}
+
+.register-card .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.register-card .form-control {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+}
+
+.register-card h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.register-card .subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.register-card .btn {
+    padding: 0.65rem;
+}

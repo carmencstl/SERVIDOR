@@ -6,7 +6,8 @@
     "psr-4": {
       "CrudGabit\\Config\\": "config/",
       "CrudGabit\\Modelos\\": "Modelos/",
-      "CrudGabit\\Controladores\\": "Controladores/"
+      "CrudGabit\\Controladores\\": "Controladores/",
+      "CrudGabit\\Enums\\": "Enums/"
     }
   }
 }

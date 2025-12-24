@@ -2,169 +2,126 @@
 
 namespace CrudGabit\Config;
 
-/**
- * Clase Router - Sistema de enrutamiento con Pretty URLs
- * Detecta automáticamente el basePath
- */
+use CrudGabit\Config\Request;
+use CrudGabit\Config\Session;
+
 class Router
 {
-    private array $routes = [];
+    private array $rutasGET = [];
+    private array $rutasPOST = [];
     private string $basePath;
 
     public function __construct(string $basePath = "")
     {
-        // Detectar basePath automáticamente si no se proporciona
         if (empty($basePath)) {
             $basePath = dirname($_SERVER["SCRIPT_NAME"]);
-
-            // Si está en la raíz, dirname devuelve '/' o '\'
-            if ($basePath === "/crudGabit" || $basePath === '\\crudGabit') {
-                $basePath = "/crudGabit";
-            }
         }
-
-        $this->basePath = rtrim($basePath, '/');
+        $this->basePath = rtrim($basePath, "/");
     }
 
     /**
-     * Registrar ruta GET
-     * @param string $path
-     * @param mixed $handler
+     * Registrar una ruta GET
+     * @param string $ruta
+     * @param array $controlador
      * @return void
      */
-    public function get(string $path, $handler): void
+    public function get(string $ruta, array $controlador): void
     {
-        $this->addRoute('GET', $path, $handler);
+        $this->rutasGET[$ruta] = $controlador;
     }
 
     /**
-     * Registrar ruta POST
-     * @param string $path
-     * @param mixed $handler
+     * Registrar una ruta POST
+     * @param string $ruta
+     * @param array $controlador
      * @return void
      */
-    public function post(string $path, $handler): void
+    public function post(string $ruta, array $controlador): void
     {
-        $this->addRoute('POST', $path, $handler);
+        $this->rutasPOST[$ruta] = $controlador;
     }
 
     /**
-     * Añadir ruta al sistema
-     * @param string $method
-     * @param string $path
-     * @param mixed $handler
-     * @return void
-     */
-    private function addRoute(string $method, string $path, $handler): void
-    {
-        $this->routes[$method][$path] = $handler;
-    }
-
-    /**
-     * Ejecutar el router
+     * Ejecutar el router: busca la ruta solicitada y ejecuta el controlador
      * @return void
      */
     public function run(): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri = $_SERVER['REQUEST_URI'];
-
-        // Eliminar query string
-        $uri = strtok($uri, '?');
-
-        // Eliminar basePath de la URI
-        if (!empty($this->basePath) && str_starts_with($uri, $this->basePath)) {
-            $uri = substr($uri, strlen($this->basePath));
+        $metodo = $_SERVER["REQUEST_METHOD"];
+        $url = $_SERVER["REQUEST_URI"];
+        $url = strtok($url, "?");
+        if (!empty($this->basePath) && str_starts_with($url, $this->basePath)) {
+            $url = substr($url, strlen($this->basePath));
         }
-
-        // Asegurar que empieza con /
-        if (empty($uri) || $uri[0] !== '/') {
-            $uri = '/' . $uri;
+        if (empty($url) || $url[0] !== "/") {
+            $url = "/" . $url;
         }
-
-        // Eliminar trailing slash (excepto /)
-        if ($uri !== '/' && substr($uri, -1) === '/') {
-            $uri = rtrim($uri, '/');
+        if ($url !== "/" && str_ends_with($url, "/")) {
+            $url = rtrim($url, "/");
         }
-
-        // Buscar ruta exacta
-        if (isset($this->routes[$method][$uri])) {
-            $this->execute($this->routes[$method][$uri]);
-            return;
+        if ($metodo === "GET") {
+            $this->ejecutarRuta($url, $this->rutasGET);
+        } elseif ($metodo === "POST") {
+            $this->ejecutarRuta($url, $this->rutasPOST);
+        } else {
+            $this->error404();
         }
-
-        // Buscar ruta con parámetros
-        foreach ($this->routes[$method] ?? [] as $route => $handler) {
-            $pattern = $this->convertToRegex($route);
-            if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches);
-                $this->execute($handler, $matches);
-                return;
-            }
-        }
-
-        // 404
-        $this->notFound();
     }
 
     /**
-     * Convertir ruta a expresión regular
-     * @param string $route
-     * @return string
-     */
-    private function convertToRegex(string $route): string
-    {
-        $route = preg_replace('/\{id\}/', '(\d+)', $route);
-        $route = preg_replace('/\{slug\}/', '([a-z0-9-]+)', $route);
-        $route = preg_replace('/\{(\w+)\}/', '([^/]+)', $route);
-
-        return '#^' . $route . '$#';
-    }
-
-    /**
-     * Ejecutar handler de ruta
-     * @param mixed $handler
-     * @param array $params
+     * Buscar y ejecutar la ruta correspondiente
+     * @param string $url
+     * @param array $rutas
      * @return void
      */
-    private function execute($handler, array $params = []): void
+    private function ejecutarRuta(string $url, array $rutas): void
     {
-        if (is_callable($handler)) {
-            call_user_func_array($handler, $params);
+        if (isset($rutas[$url])) {
+            $this->llamarControlador($rutas[$url]);
             return;
         }
 
-        if (is_array($handler) && count($handler) === 2) {
-            [$controller, $method] = $handler;
-
-            if (is_string($controller)) {
-                $controller = new $controller();
-            }
-
-            call_user_func_array([$controller, $method], $params);
-            return;
-        }
+        $this->error404();
     }
 
     /**
-     * Página 404
+     * Llamar al método del controlador
+     * @param array $controlador
      * @return void
      */
-    private function notFound(): void
+    private function llamarControlador(array $controlador): void
+    {
+        [$clase, $metodo] = $controlador;
+
+        if (is_string($clase)) {
+            $clase = new $clase();
+        }
+
+        $clase->$metodo();
+    }
+
+    /**
+     * Mostrar error 404
+     * @return void
+     */
+    private function error404(): void
     {
         http_response_code(404);
-        echo "<h1>404 - Página no encontrada</h1>";
+        Request::redirect("/dashboard");
         exit;
     }
 
-    /**
-     * Redirigir a una URL
-     * @param string $path
-     * @return void
-     */
-    public static function redirect(string $path): void
+    public static function protectAdmin($url): void
     {
-        header("Location: {$path}");
-        exit;
+        if (!Auth::checkRol()) {
+            Request::redirect($url);
+        }
+    }
+
+    public static function protectActive($url): void
+    {
+        if (!Session::active()) {
+            Request::redirect($url);
+        }
     }
 }
