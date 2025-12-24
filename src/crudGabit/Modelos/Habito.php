@@ -7,30 +7,46 @@ use CrudGabit\Config\Session;
 use PDO;
 
 class Habito {
-
-    public static int $contadorHabitos = 0;
     private int $idCamino;
-    private string $nombre;
+
+    private string $nombre {
+        set {
+            $this->nombre = ucfirst($value);
+        }
+    }
+
     private string $descripcion;
     private int $autor;
     private string $categoria;
 
-
-    public function __construct(
-        $idCamino = null,
-        $nombre = null,
-        $descripcion = null,
-        $autor = null,
-        $categoria = null,
-    )
-    {
-        if($nombre !== null) {
-            $this->nombre = $nombre;
-            $this->descripcion = $descripcion;
-            $this->autor = $autor;
-            $this->categoria = $categoria;
-            self::$contadorHabitos++;
+    private string $fechaCreacion{
+           set{
+            $this->fechaCreacion = date("d-m-Y", strtotime($value));
         }
+}
+
+    /**
+     * Constructor vacío (para fetchObject)
+     */
+    public function __construct() {}
+
+    /**
+     * Crear nuevo hábito
+     * @return Habito
+     * @param string $nombre
+     * @param string $descripcion
+     * @param int $autor
+     * @param string $categoria
+     * @return Habito
+     */
+    public static function create(string $nombre, string $descripcion, int $autor, string $categoria): self
+    {
+        $habito = new self();
+        $habito->nombre = $nombre;
+        $habito->descripcion = $descripcion;
+        $habito->autor = $autor;
+        $habito->categoria = $categoria;
+        return $habito;
     }
 
     /**
@@ -56,21 +72,20 @@ class Habito {
         $db = DataBase::connect();
         $autor = Session::get("id");
 
-        $sql = "SELECT c.*, u.nombreUsuario as nombreAutor 
-            FROM camino c 
-            INNER JOIN usuario u ON c.autor = u.idUsuario 
-            WHERE c.autor = :autor";
+        $sql = "SELECT c.*  
+        FROM camino c 
+        WHERE c.autor = :autor";
 
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(":autor", $autor, PDO::PARAM_INT);
+        $stmt->bindValue(":autor", $autor, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_CLASS, Habito::class);
     }
 
     /**
      * Obtener hábito por su ID
-     * @param int $idCamino
      * @return Habito|null
+     * @param int $idCamino
      */
     public static function getById(int $idCamino): ?Habito
     {
@@ -85,11 +100,11 @@ class Habito {
 
     /**
      * Actualizar hábito en la base de datos
+     * @return bool
      * @param int $idCamino
      * @param string $nombre
      * @param string $descripcion
      * @param string $categoria
-     * @return bool
      */
     public static function actualizarHabito(int $idCamino, string $nombre, string $descripcion, string $categoria): bool
     {
@@ -98,12 +113,13 @@ class Habito {
                 SET nombre = :nombre, descripcion = :descripcion, categoria = :categoria 
                 WHERE idCamino = :idCamino";
         $stmt = $db->prepare($sql);
-        return $stmt->execute([
-            ":nombre" => $nombre,
-            ":descripcion" => $descripcion,
-            ":categoria" => $categoria,
-            ":idCamino" => $idCamino
-        ]);
+
+        $stmt->bindValue(":nombre", $nombre, PDO::PARAM_STR);
+        $stmt->bindParam(":descripcion", $descripcion, PDO::PARAM_STR);
+        $stmt->bindParam(":categoria", $categoria, PDO::PARAM_STR);
+        $stmt->bindParam(":idCamino", $idCamino, PDO::PARAM_INT);
+
+        return $stmt->execute();
     }
 
     /**
@@ -115,33 +131,42 @@ class Habito {
         $db = DataBase::connect();
         $stmt = $db->prepare("INSERT INTO camino (nombre, descripcion, autor, categoria) 
             VALUES (:nombre, :descripcion, :autor, :categoria)");
-        return $stmt->execute([
-            ':nombre' => $this->nombre,
-            ':descripcion' => $this->descripcion,
-            ':autor' => $this->autor,
-            ':categoria' => $this->categoria
-        ]);
+
+        $stmt->bindValue(":nombre", $this->nombre, PDO::PARAM_STR);
+        $stmt->bindParam(":descripcion", $this->descripcion, PDO::PARAM_STR);
+        $stmt->bindParam(":autor", $this->autor, PDO::PARAM_INT);
+        $stmt->bindParam(":categoria", $this->categoria, PDO::PARAM_STR);
+
+        return $stmt->execute();
     }
 
     /**
-     * Crear una nueva instancia de Habito
-     * @param string $nombre
-     * @param string $descripcion
-     * @param string $categoria
-     * @return Habito
+     * Buscar hábitos por nombre, descripción o categoría
+     * @return array
+     * @param string $query
+     * @param int $autor
+     * @return array
      */
-    public static function crearHabito(string $nombre, string $descripcion, string $categoria): Habito
+    public static function search(string $query, int $autor): array
     {
-        $usuarioActual = Session::get("id");
-        $habito = new self();
-        $habito->nombre = ucfirst($nombre);
-        $habito->descripcion = $descripcion;
-        $habito->autor = $usuarioActual;
-        $habito->categoria = $categoria;
-        return $habito;
+        $db = DataBase::connect();
+        $searchTerm = "%{$query}%";
+
+        $sql = "SELECT c.* 
+        FROM camino c 
+        WHERE c.autor = :autor 
+        AND (c.nombre LIKE :search 
+             OR c.descripcion LIKE :search 
+             OR c.categoria LIKE :search)";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(":autor", $autor, PDO::PARAM_INT);
+        $stmt->bindValue(":search", $searchTerm, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_CLASS, Habito::class);
     }
 
-    // GETTERS Y SETTERS
     public function getNombre(): string
     {
         return $this->nombre;
@@ -162,24 +187,14 @@ class Habito {
         return $this->idCamino;
     }
 
-    public function setNombre(string $nombre): void
+    public function getFechaCreacion(): string
     {
-        $this->nombre = $nombre;
+        return $this->fechaCreacion;
     }
 
-    public function setAutor(int $autor): void
+    public function getNombreAutor(): string
     {
-        $this->autor = $autor;
+        $usuario = Usuario::getById($this->autor);
+        return $usuario ? $usuario->getNombreUsuario() : "Desconocido";
     }
-
-    public function setDescripcion(string $descripcion): void
-    {
-        $this->descripcion = $descripcion;
-    }
-
-    public function setCategoria(string $categoria): void
-    {
-        $this->categoria = $categoria;
-    }
-
 }

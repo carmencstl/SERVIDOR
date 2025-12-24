@@ -3,103 +3,102 @@
 namespace CrudGabit\Controladores;
 
 use CrudGabit\Config\Auth;
-use CrudGabit\Config\Router;
 use CrudGabit\Config\Session;
 use CrudGabit\Config\Request;
 use CrudGabit\Modelos\Usuario;
 
-class AuthController extends BaseController
-{
-
-
-    /**
-     * Mostrar formulario de login
-     * @return void
-     */
-    public function showLogin(): void
+    class AuthController extends BaseController
     {
-        if (Session::active()):
-            Request::redirect("/dashboard");
-        endif ;
-        echo $this->render("auth/login.twig");
-    }
 
+        /**
+         * Mostrar formulario de login
+         * @return void
+         */
+        public function showLogin(): void
+        {
+            $error = Session::get("error");
+            Session::delete("error");
 
-    /**
-     * Procesar login
-     * @return void
-     */
-    public function login(): void
-    {
-        $email = Request::get("email");
-        $password = Request::get("password");
-
-        if (Auth::login($email, $password)) {
-            Request::redirect("/crudGabit/dashboard");
-        }
-        else{
+            if (Session::active()) {
+                Request::redirect("/dashboard");
+            }
             echo $this->render("auth/login.twig", [
-                "error" => "Los datos de acceso son incorrectos"
-            ]);
-        }
-    }
-
-    /**
-     * Mostrar formulario de registro
-     * @return void
-     */
-    public function showRegister(): void
-    {
-        if(Session::active()) {
-            Request::redirect("/dashboard");
-        }
-        echo $this->render("auth/register.twig");
-    }
-
-
-    public function register(): void
-    {
-        $email = Request::get("email");
-        $nombreUsuario = Request::get("nombreUsuario");
-        $resultado = null;
-
-        if (is_object(Usuario::getByEmail($email))) {
-            $resultado = $this->render("auth/register.twig", [
-                "error" => "El email ya está registrado. Por favor, usa otro email."
-            ]);
-        } elseif (is_object(Usuario::getByNombreUsuario($nombreUsuario))) {
-            $resultado = $this->render("auth/register.twig", [
-                "error" => "El nombre de usuario ya está en uso. Por favor, elige otro."
-            ]);
-        } else {
-            $usuario = Usuario::crear(
-                $nombreUsuario,
-                Request::get("nombre"),
-                Request::get("apellidos"),
-                $email,
-                Request::get("password"),
-                "usuario"
-            );
-
-            if ($usuario->insertarUsuario()) {
-                Auth::login($email, Request::get("password"));
-                $resultado = Request::redirect("/dashboard");
-            } else {
-                $resultado = $this->render("auth/register.twig", [
-                    "error" => "Error al crear el usuario. Inténtalo de nuevo."
+                "error" => $error
                 ]);
+        }
+
+
+        /**
+         * Procesar login
+         * @return void
+         */
+        public function login(): void
+        {
+            $email = Request::get("email");
+            $password = Request::get("password");
+
+            if (Auth::login($email, $password)) {
+                Request::redirect("/crudGabit/dashboard");
+            }
+            else{
+                Session::set("error", "Credenciales inválidas. Inténtalo de nuevo.");
+                Request::redirect("/crudGabit/login");
             }
         }
-        echo $resultado;
-    }
 
-    /**
-     * Cerrar sesión
-     * @return void
-     */
-    public function logout(): void
-    {
-        Auth::logout();
-        Request::redirect("/crudGabit/login");
+        /**
+         * Mostrar formulario de registro
+         * @return void
+         */
+        public function showRegister(): void
+        {
+            $error = Session::get("error");
+            Session::delete("error");
+
+            if(Session::active()) {
+                Request::redirect("/dashboard");
+            }
+            echo $this->render("auth/register.twig", [
+                "error" => $error
+            ]);
+        }
+
+
+        public function register(): void
+        {
+            $email = Request::get("email");
+            $nombreUsuario = Request::get("nombreUsuario");
+            $resultado = null;
+
+            if ((is_object(Usuario::getByEmail($email))) || (is_object(Usuario::getByNombreUsuario($nombreUsuario)))){
+                Session::set("error", "Los datos ingresados ya están en uso. Por favor, elige otros.");
+            }
+            else {
+                $usuario = Usuario::create(
+                    Request::get("nombreUsuario"),
+                    Request::get("nombre"),
+                    Request::get("apellidos"),
+                    $email,
+                    Request::get("password"),
+                    "usuario"
+                );
+                if ($usuario->insertarUsuario()) {
+                    Auth::login($email, Request::get("password"));
+                    Request::redirect("/dashboard");
+                } else {
+                    Session::set("error", "Error al registrar el usuario. Inténtalo de nuevo.");
+                }
+            }
+            Request::redirect("/crudGabit/register");
+        }
+
+        /**
+         * Cerrar sesión
+         * @return void
+         */
+        public function logout(): void
+        {
+            Auth::logout();
+            Request::redirect("/crudGabit/login");
+        }
     }
-}

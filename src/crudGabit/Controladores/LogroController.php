@@ -10,7 +10,6 @@ use CrudGabit\Config\Session;
 class LogroController extends BaseController
 {
 
-
     /**
      * Muestra la lista de logros del usuario.
      * @return void
@@ -18,13 +17,22 @@ class LogroController extends BaseController
      */
     public function index(): void
     {
-        $logros = Logro::getLogrosByUser();
+        $search = Request::get("search");
+        $autor = Session::get("id");
+
+        if ($search) {
+            $logros = Logro::search($search, $autor);
+        } else {
+            $logros = Logro::getLogrosByUser();
+        }
+
         $success = Session::get("success");
         Session::delete("success");
 
         echo $this->render("achievements/index.twig", [
             "logros" => $logros,
-            "success" => $success
+            "success" => $success,
+            "search" => $search
         ]);
     }
 
@@ -36,17 +44,19 @@ class LogroController extends BaseController
     {
         $idLogro = (int)Request::post("idLogro");
         Logro::deleteLogroById($idLogro);
+
         Session::set("success", "Logro eliminado correctamente.");
+
         Request::redirect("/crudGabit/achievements");
     }
 
     /**
-     * Muestra el formulario de edición de un logro.
+     * Muestra el formulario de edición de un logro
      * @return void
      */
     public function showEdit(): void
     {
-        // Intentamos obtener el ID desde POST (botón editar) o sesión
+        // Intento obtener el ID desde POST (botón editar) o desde la sesión
         $idLogro = (int)Request::post("idLogro");
         if (!$idLogro) {
             $idLogro = Session::get("logro_edit_id");
@@ -58,7 +68,6 @@ class LogroController extends BaseController
         // Si no hay ID válido, redirigimos al listado
         if (!$idLogro) {
             Request::redirect("/crudGabit/achievements");
-            return;
         }
 
         // Obtenemos los datos del logro
@@ -77,23 +86,23 @@ class LogroController extends BaseController
 
 
     /**
-         * Actualiza un logro con los datos del formulario.
-         * @return void
-         */
+     * Actualiza un logro con los datos del formulario.
+     * @return void
+     */
     public function updateLogro(): void
     {
         $idLogro = (int)Request::post("idLogro");
         $nombreLogro = Request::post("nombre");
         $descripcion = Request::post("descripcion");
 
-        // Actualizamos en la BD
+        // Actualizo en la BD
         Logro::actualizarLogro($idLogro, $nombreLogro, $descripcion);
 
-        // Guardamos mensaje de éxito y ID en sesión
+        // Guardo mensaje de éxito y ID en sesión para la redirección a la misma página
         Session::set("success", "Logro actualizado correctamente.");
         Session::set("logro_edit_id", $idLogro);
 
-        // Redirigimos a la misma página de edición
+        // Redirijo a la misma página de edición
         Request::redirect("/crudGabit/achievements/edit");
     }
 
@@ -107,9 +116,9 @@ class LogroController extends BaseController
     {
         $habitosDisponibles = Habito::getHabitsByUser();
 
-        // Recuperamos mensaje de éxito si existe
+        // Recupero mensaje de éxito si existe
         $success = Session::get("success");
-        Session::delete("success"); // solo se muestra una vez
+        Session::delete("success");
 
         echo $this->render("achievements/create.twig", [
             "habitos" => $habitosDisponibles,
@@ -128,10 +137,10 @@ class LogroController extends BaseController
         $descripcion = Request::post("descripcion");
         $habito = Request::post("idCamino");
 
-        $logro = Logro::crearLogro($nombreLogro, $descripcion, $habito);
+        $logro = Logro::create($nombreLogro, $descripcion, $habito);
         $logro->insertarLogroEnBD();
 
-        // Guardamos mensaje de éxito en sesión
+        // Guardo mensaje de éxito en sesión
         Session::set("success", "Logro creado correctamente.");
 
         // Redirigimos a la misma página de creación

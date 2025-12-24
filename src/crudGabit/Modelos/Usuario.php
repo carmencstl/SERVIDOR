@@ -7,16 +7,43 @@ use PDO;
 
 class Usuario {
     private int $idUsuario;
-    private string $nombreUsuario;
-    private string $nombre;
-    private string $apellidos;
-    private ?string $email;
+
+    private string $nombreUsuario {
+        set {
+            $this->nombreUsuario = strtolower($value);
+        }
+    }
+
+    private string $nombre {
+        set {
+            $this->nombre = ucfirst($value);
+        }
+    }
+
+    private string $apellidos {
+        set {
+            $this->apellidos = ucwords($value);
+        }
+    }
+
+    private string $email;
     private string $password;
     private string $rol;
 
+    private string $fechaCreacion{
+        set{
+            $this->fechaCreacion = date("d-m-Y", strtotime($value));
+        }
+    }
 
     /**
-     * Crear una nueva instancia de Usuario
+     * Constructor vacío (para fetchObject)
+     */
+    public function __construct() {}
+
+    /**
+     * Crear nueva instancia de Usuario
+     * @return Usuario
      * @param string $nombreUsuario
      * @param string $nombre
      * @param string $apellidos
@@ -24,8 +51,9 @@ class Usuario {
      * @param string $password
      * @param string $rol
      * @return Usuario
+     *
      */
-    public static function crear(
+    public static function create(
         string $nombreUsuario,
         string $nombre,
         string $apellidos,
@@ -34,15 +62,14 @@ class Usuario {
         string $rol = "usuario"
     ): Usuario {
         $usuario = new self();
-        $usuario->nombreUsuario = strtolower($nombreUsuario);
-        $usuario->nombre        = ucfirst($nombre);
-        $usuario->apellidos     = ucwords($apellidos);
-        $usuario->email         = $email;
-        $usuario->password      = $password;
-        $usuario->rol           = $rol;
+        $usuario->nombreUsuario = $nombreUsuario;
+        $usuario->nombre = $nombre;
+        $usuario->apellidos = $apellidos;
+        $usuario->email = $email;
+        $usuario->password = $password;
+        $usuario->rol = $rol;
         return $usuario;
     }
-
 
     /**
      * Insertar el usuario en la base de datos
@@ -52,23 +79,27 @@ class Usuario {
         $pdo = DataBase::connect();
         $stmt = $pdo->prepare("INSERT INTO usuario (nombreUsuario, nombre, apellidos, email, password, rol) 
                                VALUES (:nu, :n, :a, :e, :p, :r)");
-        return $stmt->execute([
-            ":nu" => $this->nombreUsuario,
-            ":n"  => $this->nombre,
-            ":a"  => $this->apellidos,
-            ":e"  => $this->email,
-            ":p" => password_hash($this->password, PASSWORD_DEFAULT),
-            ":r"  => $this->rol
-        ]);
+
+        $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+
+        $stmt->bindValue(":nu", $this->nombreUsuario, PDO::PARAM_STR);
+        $stmt->bindValue(":n", $this->nombre, PDO::PARAM_STR);
+        $stmt->bindValue(":a", $this->apellidos, PDO::PARAM_STR);
+        $stmt->bindValue(":e", $this->email, PDO::PARAM_STR);
+        $stmt->bindValue(":p", $hashedPassword, PDO::PARAM_STR);
+        $stmt->bindValue(":r", $this->rol, PDO::PARAM_STR);
+
+        return $stmt->execute();
     }
 
     /**
      * Actualizar usuario existente
+     * @return bool
      * @param int $idUsuario
      * @param string $nombreUsuario
      * @param string $nombre
      * @param string $apellidos
-     * @param string|null $email
+     * @param string $email
      * @param string $rol
      * @return bool
      */
@@ -77,7 +108,7 @@ class Usuario {
         string $nombreUsuario,
         string $nombre,
         string $apellidos,
-        ?string $email,
+        string $email,
         string $rol
     ): bool {
         $pdo = DataBase::connect();
@@ -88,79 +119,91 @@ class Usuario {
                                    email = :email,
                                    rol = :rol
                                WHERE idUsuario = :idUsuario");
-        return $stmt->execute([
-            ":nombreUsuario" => strtolower($nombreUsuario),
-            ":nombre"        => ucfirst($nombre),
-            ":apellidos"     => ucwords($apellidos),
-            ":email"         => $email,
-            ":rol"           => $rol,
-            ":idUsuario"     => $idUsuario
-        ]);
-    }
 
+        $nombreUsuarioLower = strtolower($nombreUsuario);
+        $nombreCapital = ucfirst($nombre);
+        $apellidosCapital = ucwords($apellidos);
+
+        $stmt->bindValue(":nombreUsuario", $nombreUsuarioLower, PDO::PARAM_STR);
+        $stmt->bindValue(":nombre", $nombreCapital, PDO::PARAM_STR);
+        $stmt->bindValue(":apellidos", $apellidosCapital, PDO::PARAM_STR);
+        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+        $stmt->bindValue(":rol", $rol, PDO::PARAM_STR);
+        $stmt->bindValue(":idUsuario", $idUsuario, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 
     /**
      * Traer todos los usuarios
-     * @return array
+     * @return Usuario[]
      */
     public static function getAllUsers(): array {
         $pdo = DataBase::connect();
         return $pdo->query("SELECT * FROM usuario")->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 
-
     /**
-     * @param int $id
+     * Obtener usuario por ID
      * @return Usuario|null
+     * @param int $id
      */
     public static function getById(int $id): ?Usuario {
         $pdo = DataBase::connect();
         $stmt = $pdo->prepare("SELECT * FROM usuario WHERE idUsuario = :id");
-        $stmt->execute([":id" => $id]);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
         $usuario = $stmt->fetchObject(self::class);
         return $usuario ?: null;
     }
 
-
     /**
      * Eliminar usuario por su ID
+     * @return bool
      * @param int $id
      * @return bool
      */
     public static function deleteUserById(int $id): bool {
         $pdo = DataBase::connect();
         $stmt = $pdo->prepare("DELETE FROM usuario WHERE idUsuario = :id");
-        return $stmt->execute([":id" => $id]);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     /**
      * Buscar usuario por email
+     * @return Usuario|null
      * @param string $email
      * @return Usuario|null
      */
     public static function getByEmail(string $email): ?Usuario {
         $pdo = DataBase::connect();
         $stmt = $pdo->prepare("SELECT * FROM usuario WHERE email = :email");
-        $stmt->execute([":email" => $email]);
+        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+        $stmt->execute();
         $usuario = $stmt->fetchObject(self::class);
         return $usuario ?: null;
     }
 
     /**
      * Buscar usuario por nombreUsuario
+     * @return Usuario|null
      * @param string $nombreUsuario
      * @return Usuario|null
      */
     public static function getByNombreUsuario(string $nombreUsuario): ?Usuario {
         $pdo = DataBase::connect();
+        $nombreUsuarioLower = strtolower($nombreUsuario);
         $stmt = $pdo->prepare("SELECT * FROM usuario WHERE nombreUsuario = :nombreUsuario");
-        $stmt->execute([":nombreUsuario" => strtolower($nombreUsuario)]);
+        $stmt->bindValue(":nombreUsuario", $nombreUsuarioLower, PDO::PARAM_STR);
+        $stmt->execute();
         $usuario = $stmt->fetchObject(self::class);
         return $usuario ?: null;
     }
 
     /**
      * Buscar usuario por email y password
+     * @return Usuario|null
      * @param string $email
      * @param string $password
      * @return Usuario|null
@@ -170,7 +213,8 @@ class Usuario {
         $resultado = null;
 
         $stmt = $pdo->prepare("SELECT * FROM usuario WHERE email = :email");
-        $stmt->execute([":email" => $email]);
+        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+        $stmt->execute();
         $usuario = $stmt->fetchObject(self::class);
 
         if ($usuario && password_verify($password, $usuario->password)) {
@@ -182,20 +226,42 @@ class Usuario {
 
     /**
      * Comprobar el rol de un usuario por su ID
+     * @return string
      * @param int $idUsuario
      * @return string
      */
     public static function comprobarRol(int $idUsuario): string {
         $pdo = DataBase::connect();
         $stmt = $pdo->prepare("SELECT rol FROM usuario WHERE idUsuario = :id");
-        $stmt->execute([":id" => $idUsuario]);
+        $stmt->bindValue(":id", $idUsuario, PDO::PARAM_INT);
+        $stmt->execute();
         $rol = $stmt->fetchColumn();
         return $rol ?: "usuario";
     }
 
+    /**
+     * Buscar usuarios por nombre, apellidos, email o username
+     * @return Usuario[]
+     * @param string $query
+     * @return Usuario[]
+     */
+    public static function search(string $query): array {
+        $pdo = DataBase::connect();
+        $searchTerm = "%{$query}%";
 
+        $stmt = $pdo->prepare("SELECT * FROM usuario 
+                          WHERE nombreUsuario LIKE :search 
+                          OR nombre LIKE :search 
+                          OR apellidos LIKE :search 
+                          OR email LIKE :search");
 
-    // Getters
+        $stmt->bindValue(":search", $searchTerm, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_CLASS, Usuario::class);
+    }
+
+    // GETTERS
     public function getId(): int { return $this->idUsuario; }
     public function getNombreUsuario(): string { return $this->nombreUsuario; }
     public function getNombre(): string { return $this->nombre; }
@@ -203,35 +269,9 @@ class Usuario {
     public function getEmail(): ?string { return $this->email; }
     public function getRol(): string { return $this->rol; }
 
-    // Setters
-    public function setNombreUsuario(string $nombreUsuario): void
+    public function getFechaCreacion(): ?string
     {
-        $this->nombreUsuario = $nombreUsuario;
-    }
-
-    public function setNombre(string $nombre): void
-    {
-        $this->nombre = $nombre;
-    }
-
-    public function setApellidos(string $apellidos): void
-    {
-        $this->apellidos = $apellidos;
-    }
-
-    public function setEmail(?string $email): void
-    {
-        $this->email = $email;
-    }
-
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
-    }
-
-    public function setRol(string $rol): void
-    {
-        $this->rol = $rol;
+        return $this->fechaCreacion;
     }
 
 

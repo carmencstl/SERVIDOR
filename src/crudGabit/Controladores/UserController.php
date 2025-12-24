@@ -19,14 +19,22 @@ class UserController extends BaseController
     public function index(): void
     {
         Router::protectAdmin("/dashboard");
-        $usuarios = Usuario::getAllUsers();
+
+        $search = Request::get("search");
+
+        if ($search) {
+            $usuarios = Usuario::search($search);
+        } else {
+            $usuarios = Usuario::getAllUsers();
+        }
 
         $success = Session::get("success");
         Session::delete("success");
 
         echo $this->render("users/index.twig", [
             "usuarios" => $usuarios,
-            "success" => $success
+            "success" => $success,
+            "search" => $search
         ]);
     }
 
@@ -57,7 +65,9 @@ class UserController extends BaseController
 
         $idUsuario = Request::post("idUsuario") ?? Request::get("idUsuario") ?? Session::get("idUsuarioEdit");
 
-        Session::delete("idUsuarioEdit");
+        if (Request::post("idUsuario") || Request::get("idUsuario")) {
+            Session::set("idUsuarioEdit", $idUsuario);
+        }
 
         if (!$idUsuario) {
             Request::redirect("/crudGabit/users");
@@ -142,11 +152,11 @@ class UserController extends BaseController
         } elseif (is_object(Usuario::getByNombreUsuario($nombreUsuario))) {
             Session::set("error", "El nombre de usuario ya está en uso. Por favor, elige otro.");
         } else {
-            $usuario = Usuario::crear(
-                $nombreUsuario ?? "",
+            $usuario = Usuario::create(
+                Request::post("nombreUsuario") ?? "",
                 Request::post("nombre") ?? "",
                 Request::post("apellidos") ?? "",
-                $email ?? "",
+                Request::post("email") ?? "",
                 Request::post("password") ?? "",
                 Request::post("rol") ?? "usuario"
             );

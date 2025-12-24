@@ -5,7 +5,7 @@
     use CrudGabit\Config\Session;
     use CrudGabit\Modelos\Usuario ;
 
-    final class Auth
+    class Auth
     {
         /**
          * Iniciar sesión
@@ -22,14 +22,8 @@
             return is_object($usuario) ;
         }
 
-        public static function comprobarUsuario(string $email): bool
-        {
-            $usuario = Usuario::getByEmail($email) ;
-            return is_object($usuario) ;
-        }
-
         /**
-         * Obtener el usuario actual
+         * Obtener el usuario activo
          * @return Usuario|false
          */
         public static function user(): Usuario|false

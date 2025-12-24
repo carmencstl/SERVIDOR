@@ -10,11 +10,38 @@
             <h1>Gestión de Usuarios</h1>
             <a href="/crudGabit/dashboard" class="btn btn-outline-secondary">← Volver al Dashboard</a>
         </div>
-        <div class="mb-4">
-            <a href="/crudGabit/users/create" class="btn btn-primary">+ Nuevo Usuario</a>
+
+        {# BUSCADOR #}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form method="GET" action="/crudGabit/users" class="d-flex">
+                    <input type="text"
+                           name="search"
+                           class="form-control me-2"
+                           placeholder="Buscar por nombre, email o username..."
+                           value="{{ search ?? " " }}">
+                    <button type="submit" class="btn btn-primary">
+                        🔍 Buscar
+                    </button>
+                    {% if search %}
+                        <a href="/crudGabit/users" class="btn btn-outline-secondary ms-2">
+                            ✖ Limpiar
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="/crudGabit/users/create" class="btn btn-success">+ Nuevo Usuario</a>
+            </div>
         </div>
+
         <div class="card p-3 shadow-sm">
-            <h4 class="mb-3">Usuarios Registrados</h4>
+            <h4 class="mb-3">
+                Usuarios Registrados
+                {% if search %}
+                    <small class="text-muted">({{ usuarios|length }} resultados para "{{ search }}")</small>
+                {% endif %}
+            </h4>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -23,14 +50,19 @@
                     <th>Apellidos</th>
                     <th>Correo Electrónico</th>
                     <th>Rol</th>
+                    <th>Fecha de creación</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% if usuarios is empty %}
                     <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            No se encontraron usuarios
+                        <td colspan="7" class="text-center text-muted">
+                            {% if search %}
+                                No se encontraron usuarios que coincidan con "{{ search }}"
+                            {% else %}
+                                No se encontraron usuarios
+                            {% endif %}
                         </td>
                     </tr>
                 {% else %}
@@ -47,15 +79,17 @@
                                     <span class="badge bg-secondary">Usuario</span>
                                 {% endif %}
                             </td>
+                            <td>{{ usuario.fechaCreacion }}</td>
                             <td>
                                 <form method="POST" action="/crudGabit/users/edit" style="display:inline">
-                                    <input type="hidden" name="idUsuario" value="{{ usuario.id }}">
+                                    <input type="hidden" name="idUsuario" value="{{ usuario.idUsuario }}">
                                     <button type="submit" class="btn btn-sm btn-success">
                                         Editar
                                     </button>
                                 </form>
-                                <form method="POST" action="/crudGabit/users/delete" style="display:inline">
-                                    <input type="hidden" name="idUsuario" value="{{ usuario.id }}">
+                                <form method="POST" action="/crudGabit/users/delete" style="display:inline"
+                                      onsubmit="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                    <input type="hidden" name="idUsuario" value="{{ usuario.idUsuario }}">
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         Eliminar
                                     </button>
@@ -67,10 +101,10 @@
                 </tbody>
             </table>
         </div>
-        {%if success %}
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-            <strong>¡Éxito!</strong> {{ success }}
-        </div>
-        {%endif%}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <strong>¡Éxito!</strong> {{ success }}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

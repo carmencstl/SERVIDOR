@@ -64,21 +64,21 @@ body {
    NAVBAR
    ======================================== */
 .navbar {
-    background: var(--primary) !important;
+    background: var(--primary);
     box-shadow: 0 2px 10px rgba(5, 87, 107, 0.1);
 }
 
-.navbar-brand {
-    color: var(--white) !important;
+.navbar .navbar-brand {
+    color: var(--white);
     font-weight: 700;
     font-family: "Fraunces", serif;
 }
 
-.navbar-text {
-    color: rgba(255, 255, 255, 0.8) !important;
+.navbar .navbar-text {
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.btn-outline-light:hover {
+.navbar .btn-outline-light:hover {
     background: var(--primary-light);
     border-color: var(--primary-light);
 }
@@ -123,6 +123,36 @@ body.auth-page {
 .logo-icon {
     width: 80px;
     height: 80px;
+}
+
+/* Registro más compacto */
+.register-card {
+    max-width: 550px;
+    padding: 2rem;
+}
+
+.register-card .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.register-card .form-control {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+}
+
+.register-card h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.register-card .subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.register-card .btn {
+    padding: 0.65rem;
 }
 
 /* ========================================
@@ -231,9 +261,11 @@ body.auth-page {
 .stat-card.usuarios {
     border-left-color: var(--color-usuarios);
 }
+
 .stat-card.usuarios h3 {
     color: var(--color-usuarios);
 }
+
 .stat-card.usuarios:hover {
     background: linear-gradient(135deg, var(--white) 0%, rgba(5, 87, 107, 0.05) 100%);
 }
@@ -241,9 +273,11 @@ body.auth-page {
 .stat-card.habitos {
     border-left-color: var(--color-habitos);
 }
+
 .stat-card.habitos h3 {
     color: var(--color-habitos);
 }
+
 .stat-card.habitos:hover {
     background: linear-gradient(135deg, var(--white) 0%, rgba(5, 107, 59, 0.05) 100%);
 }
@@ -251,16 +285,52 @@ body.auth-page {
 .stat-card.logros {
     border-left-color: var(--color-logros);
 }
+
 .stat-card.logros h3 {
     color: var(--color-logros);
 }
+
 .stat-card.logros:hover {
     background: linear-gradient(135deg, var(--white) 0%, rgba(250, 145, 79, 0.05) 100%);
 }
 
 /* ========================================
-   DASHBOARD - MENU CARDS CON COLORES
+   MENU CARDS (Dashboard)
    ======================================== */
+.menu-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(5, 87, 107, 0.15);
+}
+
+.menu-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.menu-card h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.menu-card p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* DASHBOARD - MENU CARDS CON COLORES */
 .menu-card.usuarios-menu {
     border-left: 4px solid var(--color-usuarios);
 }
@@ -300,49 +370,6 @@ body.auth-page {
     color: var(--color-logros);
 }
 
-body.auth-page {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* ========================================
-   MENU CARDS (Dashboard)
-   ======================================== */
-.menu-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-}
-
-.menu-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(5, 87, 107, 0.15);
-}
-
-.menu-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-}
-
-.menu-card h4 {
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-}
-
-.menu-card p {
-    color: var(--text-muted);
-    margin: 0;
-}
-
 /* ========================================
    TABLAS
    ======================================== */
@@ -374,24 +401,47 @@ body.auth-page {
 }
 
 .badge.bg-danger {
-    background: var(--accent-red) !important;
+    background: var(--accent-red);
 }
 
 .badge.bg-secondary {
-    background: var(--text-muted) !important;
+    background: var(--text-muted);
 }
 
 /* Categorías de hábitos */
-.badge-salud { background-color: var(--accent-green); }
-.badge-productividad { background-color: var(--primary); }
-.badge-bienestar { background-color: var(--primary-light); }
-.badge-aprendizaje { background-color: var(--accent-red); }
-.badge-social { background-color: var(--primary-dark); }
+.badge-salud {
+    background-color: var(--accent-green);
+}
+
+.badge-productividad {
+    background-color: var(--primary);
+}
+
+.badge-bienestar {
+    background-color: var(--primary-light);
+}
+
+.badge-aprendizaje {
+    background-color: var(--accent-red);
+}
+
+.badge-social {
+    background-color: var(--primary-dark);
+}
 
 /* Rareza de logros */
-.badge-comun { background-color: var(--text-muted); }
-.badge-raro { background-color: var(--primary-light); }
-.badge-epico { background-color: var(--accent-red); }
+.badge-comun {
+    background-color: var(--text-muted);
+}
+
+.badge-raro {
+    background-color: var(--primary-light);
+}
+
+.badge-epico {
+    background-color: var(--accent-red);
+}
+
 .badge-legendario {
     background: linear-gradient(135deg, #FFD700, #FFA500);
     color: #000;
@@ -399,9 +449,17 @@ body.auth-page {
 }
 
 /* Dificultad */
-.badge-facil { background-color: var(--accent-green); }
-.badge-medio { background-color: var(--accent-orange); }
-.badge-dificil { background-color: var(--accent-red); }
+.badge-facil {
+    background-color: var(--accent-green);
+}
+
+.badge-medio {
+    background-color: var(--accent-orange);
+}
+
+.badge-dificil {
+    background-color: var(--accent-red);
+}
 
 /* ========================================
    ICONOS
@@ -473,7 +531,6 @@ body.auth-page {
 
 .page-usuarios .table thead {
     background: var(--color-usuarios-light);
-    color: var(--white);
 }
 
 .page-usuarios .table thead th {
@@ -482,7 +539,7 @@ body.auth-page {
 }
 
 .page-usuarios .badge.bg-danger {
-    background: var(--color-usuarios-dark) !important;
+    background: var(--color-usuarios-dark);
 }
 
 .page-usuarios .form-control:focus {
@@ -535,7 +592,6 @@ body.auth-page {
 
 .page-habitos .table thead {
     background: var(--color-habitos-light);
-    color: var(--white);
 }
 
 .page-habitos .table thead th {
@@ -593,7 +649,6 @@ body.auth-page {
 
 .page-logros .table thead {
     background: var(--color-logros-light);
-    color: var(--white);
 }
 
 .page-logros .table thead th {
@@ -611,55 +666,4 @@ body.auth-page {
     color: #000;
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(250, 145, 79, 0.4);
-}
-/* ========================================
-   FIX PARA TABLAS - TEXTO VISIBLE
-   ======================================== */
-
-/* Usuarios */
-.page-usuarios .table thead th {
-    color: var(--white) !important;
-    background: var(--color-usuarios-light);
-}
-
-/* Hábitos */
-.page-habitos .table thead th {
-    color: var(--white) !important;
-    background: var(--color-habitos-light);
-}
-
-/* Logros */
-.page-logros .table thead th {
-    color: var(--white) !important;
-    background: var(--color-logros-light);
-}
-
-/* Registro más compacto */
-.register-card {
-    max-width: 550px;
-    padding: 2rem;
-}
-
-.register-card .form-label {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-}
-
-.register-card .form-control {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.95rem;
-}
-
-.register-card h1 {
-    font-size: 2rem;
-    margin-bottom: 0.25rem;
-}
-
-.register-card .subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-}
-
-.register-card .btn {
-    padding: 0.65rem;
 }

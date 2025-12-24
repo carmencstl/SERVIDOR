@@ -4,6 +4,7 @@ namespace CrudGabit\Config;
 
 use CrudGabit\Config\Request;
 use CrudGabit\Config\Session;
+use CrudGabit\Config\Auth;
 
 class Router
 {
@@ -11,11 +12,8 @@ class Router
     private array $rutasPOST = [];
     private string $basePath;
 
-    public function __construct(string $basePath = "")
+    public function __construct(string $basePath)
     {
-        if (empty($basePath)) {
-            $basePath = dirname($_SERVER["SCRIPT_NAME"]);
-        }
         $this->basePath = rtrim($basePath, "/");
     }
 
@@ -42,23 +40,42 @@ class Router
     }
 
     /**
-     * Ejecutar el router: busca la ruta solicitada y ejecuta el controlador
+     * Limpiar y normalizar la URL
+     * @param string $url
+     * @return string
+     */
+    private function prepararUrl(string $url): string
+    {
+        // Quitar parámetros GET
+        $url = strtok($url, "?");
+
+        // Quitar basePath (/crudGabit)
+        if (str_starts_with($url, $this->basePath)) {
+            $url = substr($url, strlen($this->basePath));
+        }
+
+        // Asegurar que empieza con /
+        if (empty($url) || $url[0] !== "/") {
+            $url = "/" . $url;
+        }
+
+        // Quitar / del final (excepto raíz)
+        if ($url !== "/" && str_ends_with($url, "/")) {
+            $url = rtrim($url, "/");
+        }
+
+        return $url;
+    }
+
+    /**
+     * Ejecutar el router
      * @return void
      */
     public function run(): void
     {
         $metodo = $_SERVER["REQUEST_METHOD"];
-        $url = $_SERVER["REQUEST_URI"];
-        $url = strtok($url, "?");
-        if (!empty($this->basePath) && str_starts_with($url, $this->basePath)) {
-            $url = substr($url, strlen($this->basePath));
-        }
-        if (empty($url) || $url[0] !== "/") {
-            $url = "/" . $url;
-        }
-        if ($url !== "/" && str_ends_with($url, "/")) {
-            $url = rtrim($url, "/");
-        }
+        $url = $this->prepararUrl($_SERVER["REQUEST_URI"]);
+
         if ($metodo === "GET") {
             $this->ejecutarRuta($url, $this->rutasGET);
         } elseif ($metodo === "POST") {
@@ -78,10 +95,10 @@ class Router
     {
         if (isset($rutas[$url])) {
             $this->llamarControlador($rutas[$url]);
-            return;
         }
-
-        $this->error404();
+        else{
+            $this->error404();
+        }
     }
 
     /**
@@ -108,19 +125,16 @@ class Router
     {
         http_response_code(404);
         Request::redirect("/dashboard");
-        exit;
     }
 
+    /**
+     * Proteger ruta para administradores
+     * @param string $url
+     * @return void
+     */
     public static function protectAdmin($url): void
     {
         if (!Auth::checkRol()) {
-            Request::redirect($url);
-        }
-    }
-
-    public static function protectActive($url): void
-    {
-        if (!Session::active()) {
             Request::redirect($url);
         }
     }

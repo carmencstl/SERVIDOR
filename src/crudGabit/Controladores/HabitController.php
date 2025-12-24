@@ -9,12 +9,19 @@ use CrudGabit\Enums\Categoria;
 class HabitController extends BaseController
 {
     /**
-     * Mostrar la lista de hábitos
+     * Mostrar la lista de hábitos y los mensajes de éxito/error.
      * @return void
      */
     public function index(): void
     {
-        $habitos = Habito::getHabitsByUser();
+        $search = Request::get("search");
+        $autor = Session::get("id");
+
+        if ($search) {
+            $habitos = Habito::search($search, $autor);
+        } else {
+            $habitos = Habito::getHabitsByUser();
+        }
 
         $success = Session::get("success");
         $error = Session::get("error");
@@ -23,9 +30,10 @@ class HabitController extends BaseController
         Session::delete("error");
 
         echo $this->render("habits/index.twig", [
-            "habits" => $habitos
-            ,"success" => $success
-            ,"error" => $error
+            "habits" => $habitos,
+            "success" => $success,
+            "error" => $error,
+            "search" => $search
         ]);
     }
 
@@ -38,7 +46,7 @@ class HabitController extends BaseController
         $idHabit = (int)Request::post("idCamino");
         Habito::deleteHabitById($idHabit);
 
-        Session::set("success", "Habito eliminado correctamente.");
+        Session::set("success", "Hábito eliminado correctamente.");
 
         Request::redirect("/crudGabit/habits");
     }
@@ -64,12 +72,14 @@ class HabitController extends BaseController
 
 
     /**
-     * Mostrar el formulario de edición de un hábito
+     * Mostrar el formulario de edición de un hábito para dos casos, cuando se pulsa desde la tabla y
+     * cuando se redirige tras actualizar.
      * @return void
      */
     public function showEdit(): void
     {
         $idHabito = Request::post("idCamino");
+
         if (!$idHabito) {
             $idHabito = Session::get("habit_edit_id");
         } else {
@@ -77,7 +87,6 @@ class HabitController extends BaseController
         }
         if (!$idHabito) {
             Request::redirect("/crudGabit/habits");
-            return;
         }
 
         $habit = Habito::getById((int)$idHabito);
@@ -92,7 +101,6 @@ class HabitController extends BaseController
             "success" => $success
         ]);
     }
-
 
 
     /**
@@ -114,7 +122,7 @@ class HabitController extends BaseController
 
 
     /**
-     * Crear un nuevo hábito
+     * Crear un nuevo hábito y guardarlo en la base de datos
      * @return void
      */
     public function createHabit(): void
@@ -122,8 +130,9 @@ class HabitController extends BaseController
         $nombre = Request::post("nombreHabito");
         $descripcion = Request::post("descripcion");
         $categoria = Request::post("categoria");
+        $autor = Session::get("id");
 
-        $habito = Habito::crearHabito($nombre, $descripcion, $categoria);
+        $habito = Habito::create($nombre, $descripcion, $autor, $categoria);  // ← CAMBIAR
         $habito->insertarHabitoEnBD();
         Session::set("success", "Hábito creado correctamente.");
         Request::redirect("/crudGabit/habits/create");

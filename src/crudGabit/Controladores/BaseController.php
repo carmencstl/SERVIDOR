@@ -20,11 +20,10 @@ abstract class BaseController
      * @param array $data
      * @return string
      */
-    protected function render(string $template, array $data = []): string
+    protected function render(string $template, array $info = []): string
     {
-        $data["usuarioActivo"] = Auth::user();
-        $data["isAdmin"] = Auth::checkRol();
-
-        return $this->twig->render($template, $data);
+        $info["usuarioActivo"] = Auth::user();
+        $info["isAdmin"] = Auth::checkRol();
+        return $this->twig->render($template, $info);
     }
 }
